@@ -84,17 +84,17 @@ const weekKeys = () => Array.from({ length: 7 }, (_, i) => addDays(dateKeyOf(new
 
 /* ---------- داده‌های پایه ---------- */
 const CLUB = {
-  name: 'باشگاه پدل قائم‌شهر',
+  name: 'کیوسک کلاب',
   addr: 'قائم‌شهر، بلوار قائم‌آباد، نبش خیابان گلستان، مجموعه ورزشی شهید پدل',
   phone: '۰۱۱-۴۲۳۴۵۶۷۸',
   hours: '۰۸:۰۰ تا ۲۴:۰۰',
 };
 const COURTS = [
-  { id: 0, name: 'زمین ۱ — فول پانوراما روباز', short: 'فول پانوراما', rating: 4.9,
+  { id: 0, name: 'زمین ۱ فول پانوراما روباز', short: 'فول پانوراما', price: 420000, rating: 4.9,
     spec: 'شیشه سکوریت ۱۲ میل بدون ستون مزاحم، چمن مصنوعی آبی FIP، نورپردازی LED' },
-  { id: 1, name: 'زمین ۲ — استاندارد سرپوشیده', short: 'استاندارد سرپوشیده', rating: 4.7,
+  { id: 1, name: 'زمین ۲ استاندارد سرپوشیده', short: 'استاندارد سرپوشیده', price: 500000, rating: 4.7,
     spec: 'سقف بلند ۱۰ متری، تهویه مطبوع چهارفصل، نورپردازی ضدخیرگی' },
-  { id: 2, name: 'زمین ۳ — زمین VIP مرکزی', short: 'VIP مرکزی', rating: 5.0,
+  { id: 2, name: 'زمین ۳ VIP مرکزی', short: 'VIP مرکزی', price: 600000, rating: 5.0,
     spec: 'جایگاه تماشاگر، رختکن و دوش اختصاصی، کفپوش حرفه‌ای' },
 ];
 const SLOT_HOURS = [9, 10.5, 12, 13.5, 15, 16.5, 18, 19.5, 21, 22.5];
@@ -103,7 +103,7 @@ const RACKET_FEE = 80000;
 const CANCEL_FREE_HOURS = 6;
 const SAMPLE_USER = { name: 'امیرحسین رضایی', phone: '09111234567', points: 240 };
 const ADMIN_CRED = { user: 'admin', pass: 'admin123' };
-const STORAGE_KEY = 'padel-club-demo-v2';
+const STORAGE_KEY = 'kiosk-club-demo-v1';
 
 const slotLabel = (h) => {
   const start = faTime(Math.floor(h), h % 1 ? 30 : 0);
@@ -117,21 +117,7 @@ const slotPrice = (courtId, h) => {
   return isOffPeak(h) ? Math.round(base * (1 - state.settings.offPeakDiscount / 100)) : base;
 };
 
-/* استان‌ها و شهرها */
-const MAZANDARAN_CITIES = ['قائم‌شهر', 'ساری', 'بابل', 'آمل', 'بابلسر', 'نوشهر', 'چالوس', 'رامسر', 'بهشهر', 'جویبار', 'نور', 'محمودآباد', 'فریدونکنار', 'نکاء', 'سوادکوه', 'سیمرغ'];
-const PROVINCES = {
-  'مازندران': MAZANDARAN_CITIES,
-  'تهران': ['تهران', 'کرج', 'اسلامشهر', 'شهریار', 'پاکدشت'],
-  'خراسان رضوی': ['مشهد', 'نیشابور', 'سبزوار', 'تربت حیدریه'],
-  'اصفهان': ['اصفهان', 'کاشان', 'خمینی‌شهر', 'نجف‌آباد'],
-  'فارس': ['شیراز', 'مرودشت', 'جهرم', 'لار'],
-  'آذربایجان شرقی': ['تبریز', 'مراغه', 'میانه', 'اهر'],
-  'گیلان': ['رشت', 'انزلی', 'لاهیجان', 'رودسر'],
-  'خوزستان': ['اهواز', 'آبادان', 'ماهشهر', 'بهبهان'],
-  'سیستان و بلوچستان': ['زاهدان', 'زابل', 'چابهار'],
-  'کرمان': ['کرمان', 'رفسنجان', 'سیرجان', 'بم'],
-};
-const REGIONAL_CITIES = ['قائم‌شهر', 'ساری', 'بابل', 'آمل', 'بابلسر', 'نوشهر', 'چالوس', 'رامسر', 'بهشهر', 'نکا'];
+/* استان‌ها و شهرها — حذف شده در ری‌برند کیوسک کلاب (تک‌شعبه قائم‌شهر) */
 
 /* مقالات و پلن‌ها */
 const ARTICLES = [
@@ -153,7 +139,7 @@ const PLANS = [
 
 /* ---------- State و LocalStorage ---------- */
 let state = null;
-let ui = { view: 'home', court: 0, dayOffset: 0, cart: [], userTab: 'overview', lastView: 'home' };
+let ui = { view: 'home', court: 0, dayOffset: 0, cart: [], timeFilter: 'all', userTab: 'overview', lastView: 'home' };
 
 function seedState() {
   const today = dateKeyOf(new Date());
@@ -235,7 +221,7 @@ function qrSvg(text) {
     if (!inFinder(x, y) && rnd() > .5) rects += `<rect x="${x * cell}" y="${y * cell}" width="${cell}" height="${cell}"/>`;
   }
   finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
-  return `<svg viewBox="0 0 ${N * cell} ${N * cell}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="#0A1D33">${rects}</g></svg>`;
+  return `<svg viewBox="0 0 ${N * cell} ${N * cell}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="#0F172A">${rects}</g></svg>`;
 }
 
 /* ---------- ناوبری و نقش‌ها ---------- */
@@ -300,21 +286,12 @@ $('#menu-toggle').addEventListener('click', () => {
   $('#menu-toggle').setAttribute('aria-label', open ? 'بستن منو' : 'باز کردن منو');
 });
 
-/* ---------- انتخاب استانی شهر ---------- */
+/* ---------- ساعت‌شمار: روز و سانس ---------- */
 function fillProvinceSelects() {
-  const provSel = $('#province-select'), citySel = $('#city-select');
-  provSel.innerHTML = Object.keys(PROVINCES).map((p) => `<option${p === 'مازندران' ? ' selected' : ''}>${p}</option>`).join('');
-  const fillCities = () => {
-    citySel.innerHTML = (PROVINCES[provSel.value] || []).map((c) => `<option${c === 'قائم‌شهر' ? ' selected' : ''}>${c}</option>`).join('');
-  };
-  fillCities();
-  provSel.addEventListener('change', fillCities);
-  $('#us-city').innerHTML = MAZANDARAN_CITIES.map((c) => `<option>${c}</option>`).join('');
   $('#us-date').innerHTML = weekKeys().map((k, i) => {
     const j = jalaliLabel(k);
     return `<option value="${k}">${i === 0 ? 'امروز' : weekdayFa(k)} ${j.short}</option>`;
   }).join('');
-  $('#hero-city-label').textContent = 'قائم‌شهر، مازندران';
 }
 
 /* جستجوی هیرو */
@@ -325,17 +302,6 @@ $('#hero-search-form').addEventListener('submit', (e) => {
   if (idx >= 0) { ui.dayOffset = idx; renderBookingView(); }
 });
 
-/* ---------- نوار شهرهای منطقه ---------- */
-function renderCityPills() {
-  $('#city-pills').innerHTML = REGIONAL_CITIES.map((c, i) =>
-    `<button type="button" class="city-pill ${i === 0 ? 'active' : i > 3 ? 'partner' : ''}" data-city="${c}">${c}</button>`
-  ).join('');
-  $$('#city-pills .city-pill').forEach((b) => b.addEventListener('click', () => {
-    if (b.dataset.city === 'قائم‌شهر') { showView('booking'); return; }
-    toast('باشگاه در ' + b.dataset.city + ' به‌زودی افتتاح می‌شود؛ هم‌اکنون فقط شعبه قائم‌شهر فعال است.', 'error');
-  }));
-}
-
 /* ---------- قلب علاقه‌مندی ---------- */
 const heartSvg = (filled) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.6-7-9.6A4 4 0 0 1 12 7a4 4 0 0 1 7 3.4c0 5-7 9.6-7 9.6z" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8"/></svg>`;
 function toggleFav(kind, id) {
@@ -345,7 +311,6 @@ function toggleFav(kind, id) {
   if (i >= 0) arr.splice(i, 1); else arr.push(id);
   saveState();
   renderFavBadge();
-  renderCityPills();
   renderBookingView();
   if (ui.view === 'favorites') renderFavorites();
   if (ui.view === 'user' && ui.userTab === 'fav') renderUser();
@@ -363,8 +328,8 @@ function renderCourts() {
       <span class="court-rating">★ ${toFa(c.rating.toLocaleString('en-US'))}</span>
       <h4>${c.name}</h4>
       <p class="court-spec">${c.spec}</p>
-      <p class="court-price">${money(state.settings.prices[c.id])} <small>/ ۹۰ دقیقه</small></p>
-      <button type="button" class="btn ${ui.court === c.id ? 'btn-accent' : 'btn-ghost'} btn-sm" data-pick-court="${c.id}">${ui.court === c.id ? 'زمین انتخاب شده' : 'مشاهده سانس‌ها'}</button>
+      <p class="court-price num">${money(state.settings.prices[c.id])} <small>/ ۹۰ دقیقه</small></p>
+      <button type="button" class="btn ${ui.court === c.id ? 'btn-accent' : 'btn-ghost'} btn-sm" data-pick-court="${c.id}">${ui.court === c.id ? 'زمین انتخاب شده' : 'انتخاب زمین'}</button>
     </div>`).join('');
   $$('[data-cfav]').forEach((b) => b.addEventListener('click', () => toggleFav('courts', +b.dataset.cfav)));
   $$('[data-pick-court]').forEach((b) => b.addEventListener('click', () => {
@@ -376,18 +341,61 @@ function renderCourts() {
 }
 
 /* تقویم ۷ روزه */
+function freeSlotCount(courtId, key) {
+  return SLOT_HOURS.filter((h) => slotState(courtId, key, h) === 'free').length;
+}
 function renderCalendar() {
   const today = dateKeyOf(new Date());
   $('#calendar-strip').innerHTML = weekKeys().map((key, i) => {
     const j = jalaliLabel(key);
+    const free = freeSlotCount(ui.court, key);
     return `
       <button type="button" role="tab" class="day-chip ${i === ui.dayOffset ? 'selected' : ''}" data-day="${i}" aria-selected="${i === ui.dayOffset}">
         <span class="dow">${i === 0 ? 'امروز — ' + weekdayFa(key) : weekdayFa(key)}</span>
         <span class="dnum num">${j.short}</span>
+        <span class="day-free num">${toFa(free)} سانس آزاد</span>
       </button>`;
   }).join('');
   $$('#calendar-strip .day-chip').forEach((b) =>
     b.addEventListener('click', () => { ui.dayOffset = +b.dataset.day; renderBookingView(); }));
+}
+
+/* فیلتر زمان روز */
+const TIME_FILTERS = [
+  { id: 'all', label: 'همه سانس‌ها', test: () => true },
+  { id: 'morning', label: 'صبح و ظهر — ۲۰٪ تخفیف', test: (h) => isOffPeak(h) },
+  { id: 'afternoon', label: 'عصر', test: (h) => h >= 15 && h < 19 },
+  { id: 'night', label: 'شب', test: (h) => h >= 19 },
+];
+function renderSlotFilters() {
+  const box = $('#time-filters');
+  box.innerHTML = TIME_FILTERS.map((f) =>
+    `<button type="button" class="tf-pill ${ui.timeFilter === f.id ? 'active' : ''}" data-tf="${f.id}" aria-pressed="${ui.timeFilter === f.id}">${f.label}</button>`).join('');
+  $$('[data-tf]').forEach((b) => b.addEventListener('click', () => {
+    ui.timeFilter = b.dataset.tf;
+    renderSlotFilters(); renderSlots();
+  }));
+}
+
+/* ستون سه‌قدمی کنسول */
+function renderStepConsole() {
+  const box = $('#step-console');
+  if (!box) return;
+  const done = [
+    true,
+    ui.court !== null,
+    ui.cart.length > 0,
+  ];
+  const stepNums = [
+    { n: 1, t: 'انتخاب زمین', d: ui.court === null ? 'هنوز زمینی انتخاب نشده' : COURTS[ui.court].short },
+    { n: 2, t: 'انتخاب روز', d: 'نوار هفت‌روزه جلالی با شمار سانس آزاد' },
+    { n: 3, t: 'انتخاب سانس', d: ui.cart.length ? toFa(ui.cart.length) + ' سانس در سبد' : 'از ۰۹:۰۰ تا ۲۴:۰۰، هر سانس ۹۰ دقیقه' },
+  ];
+  box.innerHTML = stepNums.map((s, i) => `
+    <div class="step-item ${done[i + 1] ? 'done' : ''} ${i === 0 ? 'active' : ''}">
+      <span class="step-num num">${toFa(s.n)}</span>
+      <span class="step-text"><strong>${s.t}</strong><small>${s.d}</small></span>
+    </div>`).join('');
 }
 
 /* سانس‌ها */
@@ -401,7 +409,9 @@ function renderSlots() {
   const key = addDays(dateKeyOf(new Date()), ui.dayOffset);
   const j = jalaliLabel(key);
   $('#slot-hint').textContent = `سانس‌های ${COURTS[ui.court].name} — ${weekdayFa(key)} ${j.full}`;
-  $('#slots-grid').innerHTML = SLOT_HOURS.map((h) => {
+  const tf = TIME_FILTERS.find((f) => f.id === ui.timeFilter) || TIME_FILTERS[0];
+  const hours = SLOT_HOURS.filter(tf.test);
+  $('#slots-grid').innerHTML = hours.map((h) => {
     const st = slotState(ui.court, key, h);
     const block = st === 'blocked' ? state.blocks.find((b) => b.courtId === ui.court && b.dateKey === key && b.slotHour === h) : null;
     const disabled = st === 'booked' || st === 'blocked';
@@ -439,7 +449,7 @@ function renderSummaryBar() {
   $('#summary-total').textContent = 'جمع کل: ' + money(total);
   bar.classList.remove('hidden');
 }
-function renderBookingView() { renderCourts(); renderCalendar(); renderSlots(); }
+function renderBookingView() { renderCourts(); renderCalendar(); renderSlotFilters(); renderSlots(); renderStepConsole(); }
 
 /* ---------- پرداخت و بلیت دیجیتال ---------- */
 let lastGroup = null;
@@ -621,29 +631,29 @@ function renderFavorites() {
 function renderMap() {
   $('#map-svg').innerHTML = `
   <svg viewBox="0 0 600 400" role="img" aria-label="نقشه شماتیک قائم‌شهر و موقعیت باشگاه">
-    <rect width="600" height="400" fill="#0E2440"/>
-    <path d="M0 300 L600 220" stroke="#1B3A5A" stroke-width="26" fill="none"/>
-    <path d="M120 0 L180 400" stroke="#1B3A5A" stroke-width="20" fill="none"/>
-    <path d="M380 0 L340 400" stroke="#1B3A5A" stroke-width="14" fill="none"/>
-    <text x="30" y="270" fill="#9FB6CB" font-size="13">بلوار قائم‌آباد</text>
-    <text x="60" y="40" fill="#9FB6CB" font-size="12">خیابان گلستان</text>
-    <rect x="200" y="80" width="60" height="40" fill="#143354"/><text x="206" y="106" fill="#9FB6CB" font-size="11">پارک</text>
-    <rect x="430" y="300" width="90" height="50" fill="#143354"/><text x="438" y="330" fill="#9FB6CB" font-size="11">میدان اصلی</text>
+    <rect width="600" height="400" fill="#E8EEF5"/>
+    <path d="M0 300 L600 220" stroke="#C6D3E0" stroke-width="26" fill="none"/>
+    <path d="M120 0 L180 400" stroke="#C6D3E0" stroke-width="20" fill="none"/>
+    <path d="M380 0 L340 400" stroke="#C6D3E0" stroke-width="14" fill="none"/>
+    <text x="30" y="270" fill="#5B6B7C" font-size="13">بلوار قائم‌آباد</text>
+    <text x="60" y="40" fill="#5B6B7C" font-size="12">خیابان گلستان</text>
+    <rect x="200" y="80" width="60" height="40" fill="#D6E0EA"/><text x="206" y="106" fill="#5B6B7C" font-size="11">پارک</text>
+    <rect x="430" y="300" width="90" height="50" fill="#D6E0EA"/><text x="438" y="330" fill="#5B6B7C" font-size="11">میدان اصلی</text>
     <g>
-      <rect x="300" y="150" width="120" height="80" rx="10" fill="rgba(52,211,153,.14)" stroke="#34D399" stroke-width="2.4"/>
-      <text x="330" y="185" fill="#34D399" font-size="14" font-weight="700">باشگاه پدل</text>
-      <text x="336" y="205" fill="#EEF4F9" font-size="11">قائم‌شهر</text>
-      <circle cx="420" cy="150" r="6" fill="#F4C860"/>
+      <rect x="300" y="150" width="120" height="80" rx="10" fill="rgba(52,211,153,.14)" stroke="#059669" stroke-width="2.4"/>
+      <text x="330" y="185" fill="#059669" font-size="14" font-weight="700">باشگاه پدل</text>
+      <text x="336" y="205" fill="#0F172A" font-size="11">قائم‌شهر</text>
+      <circle cx="420" cy="150" r="6" fill="#1D4ED8"/>
     </g>
-    <path d="M470 325 L400 240 L366 200" stroke="#F4C860" stroke-width="2.4" fill="none" stroke-dasharray="6 6" marker-end="none"/>
-    <text x="440" y="245" fill="#F4C860" font-size="11">مسیر ۸ دقیقه‌ای از میدان</text>
+    <path d="M470 325 L400 240 L366 200" stroke="#1D4ED8" stroke-width="2.4" fill="none" stroke-dasharray="6 6" marker-end="none"/>
+    <text x="440" y="245" fill="#1D4ED8" font-size="11">مسیر ۸ دقیقه‌ای از میدان</text>
   </svg>`;
   $('#court-layout-svg').innerHTML = `
   <svg viewBox="0 0 300 220" role="img" aria-label="چیدمان سه زمین باشگاه">
-    <rect x="20" y="20" width="120" height="80" rx="6" fill="none" stroke="#34D399" stroke-width="2"/><text x="34" y="64" fill="#EEF4F9" font-size="11">زمین ۱ — پانوراما</text>
-    <rect x="160" y="20" width="120" height="80" rx="6" fill="none" stroke="#34D399" stroke-width="2"/><text x="176" y="64" fill="#EEF4F9" font-size="11">زمین ۲ — سرپوشیده</text>
-    <rect x="90" y="120" width="120" height="80" rx="6" fill="none" stroke="#F4C860" stroke-width="2.4"/><text x="106" y="156" fill="#EEF4F9" font-size="11">زمین ۳ — VIP مرکزی</text>
-    <text x="112" y="176" fill="#9FB6CB" font-size="10">جایگاه تماشاگر</text>
+    <rect x="20" y="20" width="120" height="80" rx="6" fill="none" stroke="#059669" stroke-width="2"/><text x="34" y="64" fill="#0F172A" font-size="11">زمین ۱ — پانوراما</text>
+    <rect x="160" y="20" width="120" height="80" rx="6" fill="none" stroke="#059669" stroke-width="2"/><text x="176" y="64" fill="#0F172A" font-size="11">زمین ۲ — سرپوشیده</text>
+    <rect x="90" y="120" width="120" height="80" rx="6" fill="none" stroke="#1D4ED8" stroke-width="2.4"/><text x="106" y="156" fill="#0F172A" font-size="11">زمین ۳ — VIP مرکزی</text>
+    <text x="112" y="176" fill="#5B6B7C" font-size="10">جایگاه تماشاگر</text>
   </svg>`;
   $('#map-addr').textContent = CLUB.addr;
   $('#map-phone').textContent = 'تلفن پذیرش: ' + CLUB.phone;
@@ -852,12 +862,12 @@ function renderAdminChart() {
   const dayTotals = wk.map((k) => COURTS.map((_, ci) =>
     state.bookings.filter((b) => b.dateKey === k && b.courtId === ci && b.status === 'confirmed').length));
   const max = Math.max(1, ...dayTotals.flat());
-  const colors = ['#34D399', '#4FA8E0', '#F4C860'];
+  const colors = ['#059669', '#4FA8E0', '#1D4ED8'];
   const barW = 14, groupW = (W - pad * 2) / 7;
   let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" dir="ltr">`;
   for (let g = 0; g <= 4; g++) {
     const y = H - pad - (g / 4) * (H - pad - 20);
-    svg += `<line x1="${pad}" y1="${y}" x2="${W - pad / 2}" y2="${y}" stroke="#1B3A5A" stroke-width="1"/><text x="${W - pad / 2 + 4}" y="${y + 4}" font-size="10" fill="#9FB6CB">${toFa(Math.round(max * g / 4))}</text>`;
+    svg += `<line x1="${pad}" y1="${y}" x2="${W - pad / 2}" y2="${y}" stroke="#C6D3E0" stroke-width="1"/><text x="${W - pad / 2 + 4}" y="${y + 4}" font-size="10" fill="#5B6B7C">${toFa(Math.round(max * g / 4))}</text>`;
   }
   wk.forEach((k, di) => {
     const gx = W - pad - (di + 1) * groupW;
@@ -865,10 +875,10 @@ function renderAdminChart() {
       const h = (v / max) * (H - pad - 20);
       svg += `<rect x="${gx + groupW / 2 - barW * 1.6 + ci * barW}" y="${H - pad - h}" width="${barW - 4}" height="${Math.max(h, v ? 3 : 0)}" rx="3" fill="${colors[ci]}"><title>${COURTS[ci].short}: ${toFa(v)}</title></rect>`;
     });
-    svg += `<text x="${gx + groupW / 2}" y="${H - 12}" font-size="10" fill="#9FB6CB" text-anchor="middle">${jalaliLabel(k).short}</text>`;
+    svg += `<text x="${gx + groupW / 2}" y="${H - 12}" font-size="10" fill="#5B6B7C" text-anchor="middle">${jalaliLabel(k).short}</text>`;
   });
   COURTS.forEach((c, ci) => {
-    svg += `<rect x="${pad + ci * 110}" y="6" width="10" height="10" rx="2" fill="${colors[ci]}"/><text x="${pad + ci * 110 + 16}" y="15" font-size="10" fill="#EEF4F9">${c.short}</text>`;
+    svg += `<rect x="${pad + ci * 110}" y="6" width="10" height="10" rx="2" fill="${colors[ci]}"/><text x="${pad + ci * 110 + 16}" y="15" font-size="10" fill="#0F172A">${c.short}</text>`;
   });
   $('#admin-chart').innerHTML = svg + '</svg>';
 }
@@ -1060,7 +1070,6 @@ function buildFooter() {
 /* ---------- شروع ---------- */
 function renderAll() {
   fillProvinceSelects();
-  renderCityPills();
   renderBookingView();
   renderBlogTeaser();
   renderFavBadge();

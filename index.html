@@ -3,22 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>باشگاه پدل قائم‌شهر — رزرو آنلاین سانس پدل</title>
-<meta name="description" content="رزرو آنلاین سانس‌های ۹۰ دقیقه‌ای پدل در قائم‌شهر؛ سه زمین فول‌پانوراما با شیشه سکوریت ۱۲ میل، بلیت دیجیتال و پنل مدیریت باشگاه." />
+<title>کیوسک کلاب — باشگاه تخصصی پدل قائم‌شهر | رزرو آنلاین سانس</title>
+<meta name="description" content="کیوسک کلاب، باشگاه تخصصی پدل در قائم‌شهر؛ رزرو آنلاین سانس‌های ۹۰ دقیقه‌ای روی سه زمین با شیشه سکوریت ۱۲ میل، کنسول رزرو سه‌قدمی، بلیت دیجیتال و پنل مدیریت باشگاه." />
 <link rel="stylesheet" href="./style.css" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A1D33'/%3E%3Crect x='6' y='7' width='20' height='18' rx='2' fill='none' stroke='%2334D399' stroke-width='2'/%3E%3Cline x1='16' y1='7' x2='16' y2='25' stroke='%2334D399' stroke-width='1.4'/%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23101820'/%3E%3Crect x='7' y='8' width='18' height='16' rx='2' fill='none' stroke='%23F5B02E' stroke-width='2'/%3E%3Cline x1='16' y1='8' x2='16' y2='24' stroke='%23F5B02E' stroke-width='1.4'/%3E%3C/svg%3E" />
 </head>
 <body>
 
 <!-- ===== نوار بالایی (ابزارها) ===== -->
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="geo-picker">
-      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-      <select id="province-select" class="geo-select" aria-label="استان"></select>
-      <span class="geo-sep" aria-hidden="true">/</span>
-      <select id="city-select" class="geo-select" aria-label="شهر"></select>
-    </div>
+    <div class="topbar-note">باشگاه تخصصی پدل — قائم‌شهر، مازندران</div>
     <div class="topbar-actions">
       <button type="button" class="topbar-link" data-nav="favorites">
         علاقه‌مندی‌ها
@@ -38,14 +33,14 @@
 <!-- ===== سربرگ اصلی ===== -->
 <header class="mainnav">
   <div class="mainnav-inner">
-    <button type="button" class="brand" data-nav="home" aria-label="باشگاه پدل قائم‌شهر — صفحه اصلی">
+    <button type="button" class="brand" data-nav="home" aria-label="کیوسک کلاب — صفحه اصلی">
       <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <rect x="3" y="3" width="34" height="34" rx="9" fill="var(--panel)"/>
-        <rect x="9" y="10" width="22" height="20" rx="2.5" fill="none" stroke="var(--emerald)" stroke-width="2"/>
-        <line x1="20" y1="10" x2="20" y2="30" stroke="var(--emerald)" stroke-width="1.4"/>
-        <line x1="9" y1="20" x2="31" y2="20" stroke="var(--floodlight)" stroke-width="1" stroke-dasharray="3 3"/>
+        <rect x="3" y="3" width="34" height="34" rx="4" fill="var(--panel)"/>
+        <rect x="9" y="10" width="22" height="20" rx="2" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <line x1="20" y1="10" x2="20" y2="30" stroke="var(--accent)" stroke-width="1.4"/>
+        <line x1="9" y1="20" x2="31" y2="20" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
       </svg>
-      <span class="brand-name">باشگاه پدل قائم‌شهر</span>
+      <span class="brand-name">کیوسک کلاب</span>
     </button>
     <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="باز کردن منو">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -71,28 +66,24 @@
     <div class="hero-beam" aria-hidden="true"></div>
     <div class="hero-court-lines" aria-hidden="true">
       <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice">
-        <rect x="380" y="40" width="440" height="340" rx="6" fill="none" stroke="#2C5578" stroke-width="2"/>
-        <line x1="600" y1="40" x2="600" y2="380" stroke="#2C5578" stroke-width="1.6"/>
-        <line x1="380" y1="210" x2="820" y2="210" stroke="#3A6D95" stroke-width="1.2" stroke-dasharray="7 6"/>
-        <rect x="500" y="150" width="200" height="120" fill="rgba(52,211,153,.05)" stroke="#34D399" stroke-width="1" stroke-dasharray="4 5"/>
+        <rect x="380" y="40" width="440" height="340" rx="4" fill="none" stroke="#94A8BC" stroke-width="2"/>
+        <line x1="600" y1="40" x2="600" y2="380" stroke="#94A8BC" stroke-width="1.6"/>
+        <line x1="380" y1="210" x2="820" y2="210" stroke="#B4C4D4" stroke-width="1.2" stroke-dasharray="7 6"/>
+        <rect x="500" y="150" width="200" height="120" fill="rgba(29,78,216,.06)" stroke="#1D4ED8" stroke-width="1" stroke-dasharray="4 5"/>
         <circle cx="600" cy="210" r="7" fill="var(--floodlight)"/>
       </svg>
     </div>
     <div class="hero-inner">
-      <p class="hero-kicker" id="hero-city-label">قائم‌شهر، مازندران</p>
-      <h1 class="hero-title">شب‌های روشن،<br />بازی‌های تند</h1>
-      <p class="hero-body">سه زمین فول‌پانوراما با شیشه سکوریت ۱۲ میلی‌متری، رزرو ۹۰ دقیقه‌ای از ۰۹:۰۰ تا ۲۴:۰۰ و بلیت دیجیتال با کد ورود — همه در چند لمس.</p>
+      <p class="hero-kicker">کنسول رزرو کیوسک کلاب</p>
+      <h1 class="hero-title">زمین، روز، سانس —<br />سه قدم تا بازی</h1>
+      <p class="hero-body">نوار هفت‌روزه جلالی با شمار سانس آزاد، فیلترهای صبح و ظهر با ۲۰٪ تخفیف، بار پرداخت چسبان و بلیت دیجیتال با QR — همه در یک زبان بصری ساعت‌شمار.</p>
 
       <form class="unified-search" id="hero-search-form" aria-label="جستجو و مشاهده سانس">
         <div class="us-field">
-          <label for="us-city">شهر</label>
-          <select id="us-city"></select>
-        </div>
-        <div class="us-field">
-          <label for="us-date">تاریخ</label>
+          <label for="us-date">روز بازی</label>
           <select id="us-date"></select>
         </div>
-        <button class="btn btn-accent us-submit" type="submit">جستجو و مشاهده سانس</button>
+        <button class="btn btn-accent us-submit" type="submit">ورود به کنسول رزرو</button>
       </form>
     </div>
   </div>
@@ -108,21 +99,17 @@
     </div>
   </div>
 
-  <!-- شبکه باشگاه‌های منطقه -->
-  <div class="section" id="regional-strip">
-    <h2 class="section-title">پدل در شهرهای مازندران</h2>
-    <div class="city-pills" id="city-pills"></div>
-  </div>
-
   <!-- هسته functional: رزرو زنده -->
   <div class="section section-booking" id="booking-section">
     <div class="section-head-row">
-      <h2 class="section-title">رزرو زنده زمین و سانس</h2>
+      <h2 class="section-title">کنسول رزرو زنده زمین و سانس</h2>
       <p class="section-sub">زمین را انتخاب کنید، روز را از تقویم شمسی بچینید و حداکثر ۳ سانس ۹۰ دقیقه‌ای را هم‌زمان در سبد بگذارید.</p>
     </div>
+    <div class="step-console" id="step-console" aria-label="مراحل رزرو"></div>
     <div class="court-grid" id="court-grid"></div>
     <div class="calendar-strip" id="calendar-strip" role="tablist" aria-label="تقویم ۷ روزه"></div>
-    <div class="slots-panel">
+    <div class="slots-panel" id="slots-panel-anchor">
+      <div class="time-filters" id="time-filters" role="group" aria-label="فیلتر زمانی سانس‌ها"></div>
       <p class="slot-hint" id="slot-hint"></p>
       <div class="slots-grid" id="slots-grid"></div>
     </div>
@@ -203,7 +190,7 @@
   </div>
   <div class="about-grid">
     <div class="about-story">
-      <p>باشگاه پدل قائم‌شهر در سال ۱۴۰۱ با یک زمین راه افتاد؛ امروز سه زمین استاندارد با معماری فول‌پانوراما دارد و شبانه‌روز زیر نور LED بازی می‌شود. مسیر هر بازیکن از اولین بازی تا لیگ‌های جمعه‌شهر دیده می‌شود.</p>
+      <p>کیوسک کلاب در سال ۱۴۰۱ با یک زمین راه افتاد؛ امروز سه زمین استاندارد با معماری فول‌پانوراما دارد و شبانه‌روز زیر نور LED بازی می‌شود. مسیر هر بازیکن از اولین بازی تا لیگ‌های جمعه‌شهر دیده می‌شود.</p>
       <p>زمین‌ها مطابق استاندارد مهندسی فدراسیون بین‌المللی پدل (FIP) ساخته شده‌اند: شیشه سکوریت ۱۲ میلی‌متری بدون ستون مزاحم، تور با کشش استاندارد و چمن مصنوعی پرشدت مخصوص پدل.</p>
     </div>
     <div class="stat-band">
