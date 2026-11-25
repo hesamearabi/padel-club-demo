@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>باشگاه پدل قائم‌شهر | رزرو آنلاین زمین</title>
+  <meta name="description" content="سامانه رزرو آنلاین و مدیریت زمین‌های پدل باشگاه قائم‌شهر" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="4" y="4" width="32" height="32" rx="7" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+          <line x1="20" y1="6" x2="20" y2="34" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/>
+          <circle cx="12.5" cy="16" r="4.4" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M26 22.5 L33 29.5 M26 29.5 L33 22.5" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1 class="brand-title">باشگاه پدل قائم‌شهر</h1>
+          <p class="brand-sub">رزرو آنلاین زمین و مدیریت باشگاه</p>
+        </div>
+      </div>
+
+      <nav class="role-switcher" aria-label="انتخاب نقش">
+        <button class="role-btn active" data-role="booking" type="button">رزرو آنلاین</button>
+        <button class="role-btn" data-role="user" type="button">رزروهای من</button>
+        <button class="role-btn" data-role="admin" type="button">پنل مدیریت</button>
+      </nav>
+
+      <button class="btn btn-ghost btn-sm" id="reset-demo-btn" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        بازنشانی دمو
+      </button>
+    </div>
+  </header>
+
+  <main class="container app-main">
+
+    <!-- ===== View 1: Booking ===== -->
+    <section id="view-booking" class="view" aria-label="رزرو آنلاین">
+
+      <div class="banner card">
+        <div class="banner-text">
+          <h2>پدل را در قائم‌شهر تجربه کنید</h2>
+          <p class="muted">قائم‌شهر، بلوار تهران، نبش کوچه یاغچی‌آباد — مجموعه ورزشی آریا</p>
+          <ul class="amenities">
+            <li>ساعات کاری: ۰۸:۰۰ تا ۲۴:۰۰</li>
+            <li>رختکن و سرویس حمام</li>
+            <li>کافی‌شاپ</li>
+            <li>اجاره راکت و توپ</li>
+            <li>پارکینگ اختصاصی</li>
+          </ul>
+        </div>
+        <div class="banner-art" aria-hidden="true">
+          <svg viewBox="0 0 220 120">
+            <rect x="10" y="10" width="200" height="100" rx="10" fill="none" stroke="var(--accent)" stroke-width="3"/>
+            <line x1="110" y1="10" x2="110" y2="110" stroke="var(--accent)" stroke-width="2" opacity=".6"/>
+            <line x1="10" y1="60" x2="110" y2="60" stroke="var(--accent)" stroke-width="1.4" opacity=".35"/>
+            <line x1="110" y1="60" x2="210" y2="60" stroke="var(--accent)" stroke-width="1.4" opacity=".35"/>
+            <circle cx="65" cy="45" r="9" fill="var(--accent)" opacity=".8"/>
+            <circle cx="160" cy="80" r="9" fill="var(--accent)" opacity=".5"/>
+          </svg>
+        </div>
+      </div>
+
+      <h3 class="section-title">۱. انتخاب زمین</h3>
+      <div class="court-grid" id="court-grid"><!-- rendered by app.js --></div>
+
+      <h3 class="section-title">۲. انتخاب روز</h3>
+      <div class="calendar-strip" id="calendar-strip" role="tablist" aria-label="تقویم ۷ روزه"><!-- rendered --></div>
+
+      <h3 class="section-title" id="slots-heading">۳. انتخاب سانس</h3>
+      <p class="muted slot-hint" id="slot-hint"></p>
+      <div class="slots-grid" id="slots-grid"><!-- rendered --></div>
+
+      <div class="legend">
+        <span><i class="dot dot-free"></i> آزاد</span>
+        <span><i class="dot dot-selected"></i> انتخاب‌شده</span>
+        <span><i class="dot dot-booked"></i> رزرو شده</span>
+        <span><i class="dot dot-blocked"></i> مسدود / تعمیرات</span>
+      </div>
+    </section>
+
+    <!-- ===== View 2: User panel ===== -->
+    <section id="view-user" class="view hidden" aria-label="پنل رزروهای من">
+      <div class="card profile-card">
+        <div class="avatar" aria-hidden="true">ر</div>
+        <div class="profile-info">
+          <h2 id="profile-name">—</h2>
+          <p class="muted" id="profile-phone">—</p>
+        </div>
+        <div class="points-badge">
+          <strong id="profile-points">۰</strong>
+          <span>امتیاز باشگاه مشتریان</span>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-usertab="upcoming" type="button">رزروهای پیش‌رو</button>
+        <button class="tab" data-usertab="history" type="button">تاریخچه رزروها</button>
+      </div>
+      <div id="user-bookings" class="booking-list"><!-- rendered --></div>
+    </section>
+
+    <!-- ===== View 3: Admin ===== -->
+    <section id="view-admin" class="view hidden" aria-label="پنل مدیریت باشگاه">
+      <div class="kpi-grid" id="kpi-grid"><!-- rendered --></div>
+
+      <div class="card">
+        <h3 class="card-title">تعداد رزرو ۳ زمین در طول هفته</h3>
+        <div id="admin-chart"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3 class="card-title">مدیریت رزروها</h3>
+          <button class="btn btn-accent btn-sm" id="open-manual-book" type="button">+ ثبت رزرو حضوری / تلفنی</button>
+        </div>
+        <div class="filters">
+          <select id="filter-court" class="input"></select>
+          <select id="filter-status" class="input">
+            <option value="all">همه وضعیت‌ها</option>
+            <option value="confirmed">قطعی</option>
+            <option value="cancelled">لغو شده</option>
+          </select>
+          <input type="search" id="filter-search" class="input" placeholder="جستجوی نام، موبایل یا کد رهگیری…" />
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>کد</th><th>مشتری</th><th>زمین</th><th>تاریخ</th><th>سانس</th><th>مبلغ</th><th>وضعیت</th><th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="card">
+          <h3 class="card-title">مسدودسازی سانس</h3>
+          <form id="block-form" class="form-grid">
+            <label>زمین
+              <select id="block-court" class="input" data-court-select></select>
+            </label>
+            <label>روز
+              <select id="block-date" class="input"></select>
+            </label>
+            <label>سانس
+              <select id="block-slot" class="input"></select>
+            </label>
+            <label>دلیل
+              <input type="text" id="block-reason" class="input" placeholder="مثلاً: شست‌وشوی چمن" required />
+            </label>
+            <button class="btn btn-accent" type="submit">مسدود کن</button>
+          </form>
+          <h4 class="sub-title">سانس‌های مسدود فعلی</h4>
+          <ul id="block-list" class="block-list"></ul>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">تنظیمات تعرفه زمین‌ها</h3>
+          <form id="pricing-form" class="form-grid">
+            <label>تعرفه زمین ۱ (فول پانوراما) — تومان
+              <input type="number" id="price-0" class="input" min="0" step="10000" required />
+            </label>
+            <label>تعرفه زمین ۲ (استاندارد سرپوشیده) — تومان
+              <input type="number" id="price-1" class="input" min="0" step="10000" required />
+            </label>
+            <label>تعرفه زمین ۳ (VIP مرکزی) — تومان
+              <input type="number" id="price-2" class="input" min="0" step="10000" required />
+            </label>
+            <label>درصد تخفیف ساعات صبح (۰۹:۰۰ تا ۱۵:۰۰)
+              <input type="number" id="offpeak" class="input" min="0" max="90" required />
+            </label>
+            <button class="btn btn-accent" type="submit">ذخیره تنظیمات</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Sticky summary bar ===== -->
+  <div class="summary-bar hidden" id="summary-bar">
+    <div class="container summary-inner">
+      <div>
+        <strong id="summary-count">—</strong>
+        <span class="muted" id="summary-total">—</span>
+      </div>
+      <button class="btn btn-accent" id="open-checkout" type="button">تکمیل و ثبت رزرو</button>
+    </div>
+  </div>
+
+  <!-- ===== Bottom navigation (mobile) ===== -->
+  <nav class="bottom-nav" aria-label="ناوبری اصلی">
+    <button class="bottom-nav-btn active" data-role="booking" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 4v16M3 12h9"/></svg>
+      <span>رزرو</span>
+    </button>
+    <button class="bottom-nav-btn" data-role="user" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5 8-5s6.5 1 8 5"/></svg>
+      <span>رزروهای من</span>
+    </button>
+    <button class="bottom-nav-btn" data-role="admin" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="12" width="4" height="8"/><rect x="10" y="7" width="4" height="13"/><rect x="17" y="3" width="4" height="17"/></svg>
+      <span>مدیریت</span>
+    </button>
+  </nav>
+
+  <!-- ===== Booking / checkout modal ===== -->
+  <div class="modal-overlay hidden" id="checkout-modal">
+    <div class="modal card" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <button class="modal-close" data-close type="button" aria-label="بستن">×</button>
+      <div id="checkout-body"><!-- rendered --></div>
+    </div>
+  </div>
+
+  <!-- ===== Manual (admin) booking modal ===== -->
+  <div class="modal-overlay hidden" id="manual-modal">
+    <div class="modal card" role="dialog" aria-modal="true" aria-labelledby="manual-title">
+      <button class="modal-close" data-close type="button" aria-label="بستن">×</button>
+      <h3 id="manual-title">ثبت رزرو حضوری / تلفنی</h3>
+      <form id="manual-form" class="form-grid">
+        <label>نام و نام خانوادگی
+          <input type="text" id="manual-name" class="input" required />
+        </label>
+        <label>شماره موبایل
+          <input type="tel" id="manual-phone" class="input" pattern="09[0-9]{9}" placeholder="09xxxxxxxxx" required />
+        </label>
+        <label>زمین
+          <select id="manual-court" class="input" data-court-select></select>
+        </label>
+        <label>روز
+          <select id="manual-date" class="input"></select>
+        </label>
+        <label>سانس
+          <select id="manual-slot" class="input"></select>
+        </label>
+        <button class="btn btn-accent" type="submit">ثبت قطعی رزرو</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Confirm modal ===== -->
+  <div class="modal-overlay hidden" id="confirm-modal">
+    <div class="modal modal-sm card" role="alertdialog" aria-modal="true">
+      <h3 id="confirm-title">تایید</h3>
+      <p id="confirm-text" class="muted"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="confirm-no" type="button">انصراف</button>
+        <button class="btn btn-danger" id="confirm-yes" type="button">تایید</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toasts ===== -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <footer class="app-footer">
+    <p class="muted">دموی نمونه — تمام داده‌ها در LocalStorage مرورگر شما ذخیره می‌شود.</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
