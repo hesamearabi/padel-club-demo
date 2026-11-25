@@ -67,7 +67,7 @@ body {
   font-size: 15.5px;
   line-height: 1.9;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 76px; /* ناوبری پایین موبایل */
+  padding-bottom: 132px; /* ناوبری پایین موبایل + نوار سبد */
 }
 h1, h2, h3 { line-height: 1.4; margin: 0 0 var(--s2); }
 h1 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 900; letter-spacing: -.01em; }
