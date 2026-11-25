@@ -1,432 +1,299 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>کیوسک کلاب — باشگاه تخصصی پدل قائم‌شهر | رزرو آنلاین سانس</title>
-<meta name="description" content="کیوسک کلاب، باشگاه تخصصی پدل در قائم‌شهر؛ رزرو آنلاین سانس‌های ۹۰ دقیقه‌ای روی سه زمین با شیشه سکوریت ۱۲ میل، کنسول رزرو سه‌قدمی، بلیت دیجیتال و پنل مدیریت باشگاه." />
-<link rel="stylesheet" href="./style.css" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23101820'/%3E%3Crect x='7' y='8' width='18' height='16' rx='2' fill='none' stroke='%23F5B02E' stroke-width='2'/%3E%3Cline x1='16' y1='8' x2='16' y2='24' stroke='%23F5B02E' stroke-width='1.4'/%3E%3C/svg%3E" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کیوسک کلاب — باشگاه تخصصی پدل قائم‌شهر</title>
+<meta name="description" content="رزرو آنلاین زمین پدل در قائم‌شهر — سه زمین استاندارد FIP، سانس‌های ۹۰ دقیقه‌ای، بلیت دیجیتال با QR.">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-<!-- ===== نوار بالایی (ابزارها) ===== -->
-<div class="topbar">
-  <div class="topbar-inner">
-    <div class="topbar-note">باشگاه تخصصی پدل — قائم‌شهر، مازندران</div>
-    <div class="topbar-actions">
-      <button type="button" class="topbar-link" data-nav="favorites">
-        علاقه‌مندی‌ها
-        <span class="badge" id="fav-badge">۰</span>
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-start">
+      <button id="menu-toggle" class="icon-btn" aria-label="باز کردن منو" aria-expanded="false" aria-controls="nav-drawer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </button>
-      <button type="button" class="topbar-link" data-nav="plans">خرید پلن عضویت</button>
-      <button type="button" class="topbar-link" id="auth-entry" data-nav="auth">ورود / ثبت‌نام</button>
-      <div class="session-box hidden" id="session-box">
-        <span class="session-badge" id="session-role-name"></span>
-        <button type="button" class="topbar-link" id="panel-entry">پنل من</button>
-        <button type="button" class="topbar-link" id="logout-btn">خروج</button>
-      </div>
+      <a href="#" class="brand" data-nav="home" aria-label="کیوسک کلاب — صفحه اصلی">
+        <svg class="brand-mark" width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="2" y="2" width="36" height="36" rx="5" fill="var(--court-900)"/>
+          <rect x="7" y="7" width="26" height="26" rx="2" fill="none" stroke="#fff" stroke-width="1.6"/>
+          <line x1="20" y1="7" x2="20" y2="33" stroke="#fff" stroke-width="1.6"/>
+          <circle cx="14" cy="20" r="3.4" fill="var(--ball-500)"/>
+        </svg>
+        <span class="brand-word">کیوسک کلاب</span>
+      </a>
     </div>
-  </div>
-</div>
-
-<!-- ===== سربرگ اصلی ===== -->
-<header class="mainnav">
-  <div class="mainnav-inner">
-    <button type="button" class="brand" data-nav="home" aria-label="کیوسک کلاب — صفحه اصلی">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <rect x="3" y="3" width="34" height="34" rx="4" fill="var(--panel)"/>
-        <rect x="9" y="10" width="22" height="20" rx="2" fill="none" stroke="var(--accent)" stroke-width="2"/>
-        <line x1="20" y1="10" x2="20" y2="30" stroke="var(--accent)" stroke-width="1.4"/>
-        <line x1="9" y1="20" x2="31" y2="20" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
-      </svg>
-      <span class="brand-name">کیوسک کلاب</span>
-    </button>
-    <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="باز کردن منو">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-    <nav class="nav-links" id="nav-links" aria-label="ناوبری اصلی">
-      <button type="button" data-nav="home">صفحه اصلی</button>
-      <button type="button" data-nav="booking">رزرو آنلاین زمین</button>
-      <button type="button" data-nav="map">نقشه و مسیر</button>
-      <button type="button" data-nav="blog">وبلاگ</button>
-      <button type="button" data-nav="about">درباره ما</button>
-      <button type="button" data-nav="contact">تماس با ما</button>
-      <button type="button" data-nav="account">حساب کاربری</button>
+    <nav class="header-nav" aria-label="ناوبری اصلی">
+      <a href="#" data-nav="home">رزرو آنلاین</a>
+      <a href="#" data-nav="plans">پلن‌های عضویت</a>
+      <a href="#" data-nav="map">نقشه و مسیر</a>
+      <a href="#" data-nav="blog">وبلاگ</a>
+      <a href="#" data-nav="about">درباره ما</a>
+      <a href="#" data-nav="contact">تماس با ما</a>
     </nav>
-    <button type="button" class="cta-pill" id="nav-cta">رزرو سریع سانس</button>
+    <div class="header-end">
+      <button id="fav-btn" class="icon-btn" aria-label="علاقه‌مندی‌ها">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20.5 4.6 13a4.9 4.9 0 0 1 0-7 4.8 4.8 0 0 1 6.9 0l.5.5.5-.5a4.8 4.8 0 0 1 6.9 0 4.9 4.9 0 0 1 0 7Z"/></svg>
+        <span id="fav-badge" class="badge" hidden>۰</span>
+      </button>
+      <button id="auth-btn" class="auth-pill">ورود / ثبت‌نام</button>
+    </div>
   </div>
 </header>
 
-<main id="main">
+<!-- ══════════ DRAWER ══════════ -->
+<div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+<aside id="nav-drawer" class="drawer" aria-hidden="true" aria-label="منوی همبرگری">
+  <div class="drawer-head">
+    <span class="brand-word">کیوسک کلاب</span>
+    <button id="drawer-close" class="icon-btn" aria-label="بستن منو">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <nav class="drawer-nav" aria-label="منوی کامل">
+    <a href="#" data-nav="home">صفحه اصلی و رزرو</a>
+    <a href="#" data-nav="plans">پلن‌های عضویت</a>
+    <a href="#" data-nav="favorites">علاقه‌مندی‌ها</a>
+    <a href="#" data-nav="map">نقشه و مسیر</a>
+    <a href="#" data-nav="blog">وبلاگ آموزشی</a>
+    <a href="#" data-nav="about">درباره ما</a>
+    <a href="#" data-nav="contact">تماس با ما</a>
+    <a href="#" data-nav="player">پنل بازیکن</a>
+    <a href="#" data-nav="admin">پنل مدیریت باشگاه</a>
+  </nav>
+  <div class="drawer-role">
+    <span class="drawer-role-label">نمای نمایشی</span>
+    <div class="seg">
+      <button class="seg-btn" data-role="guest">بازدیدکننده</button>
+      <button class="seg-btn" data-role="player">بازیکن</button>
+      <button class="seg-btn" data-role="admin">مدیر</button>
+    </div>
+  </div>
+  <button id="reset-demo" class="btn-ghost-danger">بازنشانی داده‌های دمو</button>
+</aside>
 
-<!-- ================= صفحه اصلی ================= -->
+<main id="app">
+
+<!-- ══════════ HOME ══════════ -->
 <section class="view" id="view-home">
   <div class="hero">
-    <div class="hero-beam" aria-hidden="true"></div>
-    <div class="hero-court-lines" aria-hidden="true">
-      <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice">
-        <rect x="380" y="40" width="440" height="340" rx="4" fill="none" stroke="#94A8BC" stroke-width="2"/>
-        <line x1="600" y1="40" x2="600" y2="380" stroke="#94A8BC" stroke-width="1.6"/>
-        <line x1="380" y1="210" x2="820" y2="210" stroke="#B4C4D4" stroke-width="1.2" stroke-dasharray="7 6"/>
-        <rect x="500" y="150" width="200" height="120" fill="rgba(29,78,216,.06)" stroke="#1D4ED8" stroke-width="1" stroke-dasharray="4 5"/>
-        <circle cx="600" cy="210" r="7" fill="var(--floodlight)"/>
-      </svg>
+    <svg class="hero-court" viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="1200" height="320" fill="var(--court-900)"/>
+      <g stroke="#ffffff" stroke-opacity=".14" stroke-width="1.5" fill="none">
+        <rect x="180" y="40" width="840" height="240" rx="4"/>
+        <line x1="600" y1="40" x2="600" y2="280"/>
+        <rect x="240" y="70" width="720" height="180" rx="3"/>
+      </g>
+      <g stroke="#ffffff" stroke-opacity=".08" stroke-width="10">
+        <line x1="180" y1="40" x2="180" y2="280"/><line x1="1020" y1="40" x2="1020" y2="280"/>
+      </g>
+      <circle cx="430" cy="160" r="10" fill="var(--ball-500)" fill-opacity=".85"/>
+      <circle cx="800" cy="120" r="10" fill="var(--ball-500)" fill-opacity=".55"/>
+    </svg>
+    <div class="hero-content">
+      <h1>باشگاه تخصصی پدل کیوسک کلاب — قائم‌شهر</h1>
+      <p>سه زمین استاندارد FIP، سانس‌های ۹۰ دقیقه‌ای از ۰۹:۰۰ تا ۲۴:۰۰، بلیت دیجیتال با کد QR.</p>
     </div>
-    <div class="hero-inner">
-      <p class="hero-kicker">کنسول رزرو کیوسک کلاب</p>
-      <h1 class="hero-title">زمین، روز، سانس —<br />سه قدم تا بازی</h1>
-      <p class="hero-body">نوار هفت‌روزه جلالی با شمار سانس آزاد، فیلترهای صبح و ظهر با ۲۰٪ تخفیف، بار پرداخت چسبان و بلیت دیجیتال با QR — همه در یک زبان بصری ساعت‌شمار.</p>
-
-      <form class="unified-search" id="hero-search-form" aria-label="جستجو و مشاهده سانس">
-        <div class="us-field">
-          <label for="us-date">روز بازی</label>
-          <select id="us-date"></select>
-        </div>
-        <button class="btn btn-accent us-submit" type="submit">ورود به کنسول رزرو</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- دسته‌بندی‌های دسترسی سریع -->
-  <div class="section" id="quick-access">
-    <h2 class="section-title">چی نیاز داری؟</h2>
-    <div class="category-strip" id="category-strip">
-
-      <button type="button" class="cat-tile" data-cat="courts"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.4"/></svg><span>رزرو زمین پدل</span></button>
-      <button type="button" class="cat-tile" data-cat="plans"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 10.5h18" stroke="currentColor" stroke-width="1.7"/><path d="M7 15h4" stroke="currentColor" stroke-width="1.5"/></svg><span>پلن‌های عضویت</span></button>
-      <button type="button" class="cat-tile" data-cat="map"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>نقشه باشگاه</span></button>
-    </div>
-  </div>
-
-  <!-- هسته functional: رزرو زنده -->
-  <div class="section section-booking" id="booking-section">
-    <div class="section-head-row">
-      <h2 class="section-title">کنسول رزرو زنده زمین و سانس</h2>
-      <p class="section-sub">زمین را انتخاب کنید، روز را از تقویم شمسی بچینید و حداکثر ۳ سانس ۹۰ دقیقه‌ای را هم‌زمان در سبد بگذارید.</p>
-    </div>
-    <div class="step-console" id="step-console" aria-label="مراحل رزرو"></div>
-    <div class="court-grid" id="court-grid"></div>
-    <div class="calendar-strip" id="calendar-strip" role="tablist" aria-label="تقویم ۷ روزه"></div>
-    <div class="slots-panel" id="slots-panel-anchor">
-      <div class="time-filters" id="time-filters" role="group" aria-label="فیلتر زمانی سانس‌ها"></div>
-      <p class="slot-hint" id="slot-hint"></p>
-      <div class="slots-grid" id="slots-grid"></div>
-    </div>
-  </div>
-
-  <!-- وبلاگ (پیش‌نمایش) -->
-  <div class="section" id="blog-teaser">
-    <div class="blog-teaser-inner">
-      <h2 class="section-title">آخرین مقالات آموزشی</h2>
-      <button type="button" class="link-more" data-nav="blog">همه مقالات</button>
-    </div>
-    <div class="article-grid" id="blog-teaser-grid"></div>
-  </div>
-</section>
-
-<!-- ================= پلن‌های عضویت ================= -->
-<section class="view hidden" id="view-plans">
-  <div class="view-head">
-    <h1>خرید پلن عضویت</h1>
-    <p>با پلن ماهانه، سانس‌های خود را ارزان‌تر و اول‌ویت‌دار رزرو کنید. فعال‌سازی بلافاصله در حساب بازیکن ثبت می‌شود.</p>
-  </div>
-  <div class="plan-grid" id="plan-grid"></div>
-  <div class="panel-card" id="active-plan-card"></div>
-</section>
-
-<!-- ================= نقشه ================= -->
-<section class="view hidden" id="view-map">
-  <div class="view-head">
-    <h1>نقشه و مسیریابی</h1>
-    <p>باشگاه در بلوار قائم‌آباد، ده دقیقه از میدان اصلی شهر؛ پارک اختصاصی از ضلع جنوبی مجموعه.</p>
-  </div>
-  <div class="map-layout">
-    <figure class="map-card" id="map-svg"></figure>
-    <div class="map-side">
-      <div class="panel-card">
-        <h3>آدرس و تماس</h3>
-        <p class="map-addr" id="map-addr"></p>
-        <p class="muted" id="map-phone"></p>
+    <form id="hero-console" class="hero-console" aria-label="جستجوی سانس آزاد">
+      <div class="console-field">
+        <label for="hc-court">انتخاب زمین</label>
+        <select id="hc-court"></select>
       </div>
-      <div class="panel-card">
-        <h3>پارکینگ و دسترسی</h3>
-        <ul class="plain-list">
-          <li>ورودی پارکینگ از خیابان جنوبی؛ ۳۰ جایگاه اختصاصی رایگان</li>
-          <li>مسیر پیاده ۴ دقیقه از ایستگاه اتوبوس بلوار اصلی</li>
-          <li>درب ورود زمین‌ها: ۵ دقیقه پیش از شروع سانس باز می‌شود</li>
-        </ul>
+      <div class="console-field">
+        <label for="hc-date">تاریخ بازی</label>
+        <select id="hc-date"></select>
       </div>
-      <div class="panel-card">
-        <h3>چیدمان مجموعه</h3>
-        <div id="court-layout-svg"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= علاقه‌مندی‌ها ================= -->
-<section class="view hidden" id="view-favorites">
-  <div class="view-head">
-    <h1>علاقه‌مندی‌ها</h1>
-    <p>هر زمینی که قلبش را پر کرده‌اید اینجا جمع می‌شود.</p>
-  </div>
-  <div id="favorites-content"></div>
-</section>
-
-<!-- ================= وبلاگ ================= -->
-<section class="view hidden" id="view-blog">
-  <div class="view-head">
-    <h1>وبلاگ آموزشی</h1>
-    <p>راهنمای بازی، تاکتیک و اخبار باشگاه — نوشته مربیان خودمان.</p>
-  </div>
-  <div class="article-grid" id="blog-grid"></div>
-</section>
-
-<!-- ================= درباره ما ================= -->
-<section class="view hidden" id="view-about">
-  <div class="view-head">
-    <h1>درباره ما</h1>
-  </div>
-  <div class="about-grid">
-    <div class="about-story">
-      <p>کیوسک کلاب در سال ۱۴۰۱ با یک زمین راه افتاد؛ امروز سه زمین استاندارد با معماری فول‌پانوراما دارد و شبانه‌روز زیر نور LED بازی می‌شود. مسیر هر بازیکن از اولین بازی تا لیگ‌های جمعه‌شهر دیده می‌شود.</p>
-      <p>زمین‌ها مطابق استاندارد مهندسی فدراسیون بین‌المللی پدل (FIP) ساخته شده‌اند: شیشه سکوریت ۱۲ میلی‌متری بدون ستون مزاحم، تور با کشش استاندارد و چمن مصنوعی پرشدت مخصوص پدل.</p>
-    </div>
-    <div class="stat-band">
-      <div class="stat"><strong>۳</strong><span>زمین استاندارد FIP</span></div>
-      <div class="stat"><strong>۲,۴۰۰+</strong><span>بازی ثبت‌شده</span></div>
-      <div class="stat"><strong>۱۵</strong><span>ساعت بازی روزانه</span></div>
-      <div class="stat"><strong>۴٫۸</strong><span>میانگین رضایت بازیکنان</span></div>
-    </div>
-    <div class="panel-card">
-      <h3>امکانات باشگاه</h3>
-      <ul class="plain-list">
-        <li>رختکن و دوش آب گرم در هر دو سکو</li>
-        <li>کافه‌تریا با منوی ورزشی کنار زمین مرکزی</li>
-        <li>اجاره ست راکت و توپ روی وانت باشگاه</li>
-        <li>پارکینگ اختصاصی ۳۰ جایگاه</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ================= تماس با ما ================= -->
-<section class="view hidden" id="view-contact">
-  <div class="view-head">
-    <h1>تماس با ما</h1>
-  </div>
-  <div class="contact-layout">
-    <div class="panel-card">
-      <h3>اطلاعات تماس</h3>
-      <p id="contact-addr"></p>
-      <p id="contact-phone"></p>
-      <p>ساعت کاری باشگاه: ۰۸:۰۰ تا ۲۴:۰۰</p>
-      <p class="muted">پاسخ پیام‌های همین فرم در «پیام‌های ارتباط با ما» پنل مدیریت دیده می‌شود.</p>
-    </div>
-    <form class="panel-card form-grid" id="contact-form">
-      <h3>ارسال پیام به باشگاه</h3>
-      <label>نام و نام خانوادگی
-        <input type="text" id="cf-name" class="input" required />
-      </label>
-      <label>شماره موبایل
-        <input type="tel" id="cf-phone" class="input" pattern="09[0-9]{9}" required />
-      </label>
-      <label>موضوع
-        <select id="cf-subject">
-          <option>پیام عمومی</option>
-          <option>پیشنهاد و انتقاد</option>
+      <div class="console-field">
+        <label for="hc-window">بازه زمانی</label>
+        <select id="hc-window">
+          <option value="all">همه سانس‌ها</option>
+          <option value="morning">صبح و ظهر (۲۰٪ تخفیف)</option>
+          <option value="afternoon">عصر</option>
+          <option value="night">شب</option>
         </select>
-      </label>
-      <label class="span-2">متن پیام
-        <textarea id="cf-body" rows="4" required></textarea>
-      </label>
-      <button class="btn btn-accent" type="submit">ارسال پیام</button>
+      </div>
+      <button type="submit" class="btn-primary console-cta">مشاهده سانس‌های آزاد</button>
     </form>
   </div>
-</section>
 
-<!-- ================= ورود / ثبت‌نام ================= -->
-<section class="view hidden" id="view-auth">
-  <div class="view-head">
-    <h1>ورود / ثبت‌نام</h1>
-  </div>
-  <div class="auth-card">
-    <div class="auth-tabs" role="tablist">
-      <button type="button" class="auth-tab active" data-authtab="player" role="tab">ورود / ثبت‌نام بازیکن</button>
-      <button type="button" class="auth-tab" data-authtab="admin" role="tab">ورود پنل مدیریت (ادمین)</button>
+  <div class="container">
+    <div id="booking-steps" class="booking-steps">
+      <h2 class="step-title">۱. انتخاب زمین</h2>
+      <div id="courts-grid" class="courts-grid"></div>
+
+      <h2 class="step-title">۲. انتخاب روز</h2>
+      <div id="days-strip" class="days-strip" role="listbox" aria-label="هفت‌روزه تقویم جلالی"></div>
+
+      <h2 class="step-title">۳. انتخاب سانس ۹۰ دقیقه‌ای</h2>
+      <div id="time-filters" class="time-filters"></div>
+      <div id="slots-panel" class="slots-panel" aria-live="polite"></div>
     </div>
-    <div id="auth-player-pane">
-      <form class="form-grid" id="otp-form">
-        <label>شماره موبایل
-          <input type="tel" id="otp-phone" class="input" pattern="09[0-9]{9}" placeholder="۰۹۱۱۰۰۰۰۰۰۰" required />
-        </label>
-        <label>کد یک‌بارمصرف
-          <input type="text" id="otp-code" class="input" inputmode="numeric" placeholder="کد ۴ رقمی" />
-        </label>
-        <div class="form-row">
-          <button class="btn btn-ghost" type="button" id="otp-send">ارسال کد دمو</button>
-          <button class="btn btn-accent" type="submit">ورود بازیکن</button>
-        </div>
-      </form>
-      <button class="btn btn-outline demo-login" type="button" id="demo-player-login">ورود سریع به عنوان بازیکن نمونه</button>
-    </div>
-    <div id="auth-admin-pane" class="hidden">
-      <form class="form-grid" id="admin-login-form">
-        <label>نام کاربری
-          <input type="text" id="admin-user" class="input" placeholder="admin" />
-        </label>
-        <label>گذرواژه
-          <input type="password" id="admin-pass" class="input" placeholder="••••••" />
-        </label>
-        <button class="btn btn-accent" type="submit">ورود مدیر باشگاه</button>
-      </form>
-      <button class="btn btn-outline demo-login" type="button" id="demo-admin-login">ورود سریع به عنوان مدیر باشگاه</button>
+
+    <div class="home-strip">
+      <a href="#" class="strip-link" data-nav="plans">پلن‌های عضویت کیوسک کلاب را ببینید</a>
+      <a href="#" class="strip-link" data-nav="map">مسیر رسیدن به باشگاه</a>
     </div>
   </div>
 </section>
 
-<!-- ================= پنل بازیکن ================= -->
-<section class="view hidden" id="view-user">
-  <div class="view-head">
-    <h1>پنل اختصاصی بازیکن</h1>
-    <p id="user-greeting"></p>
-  </div>
-  <div class="panel-layout">
-    <aside class="panel-side" role="tablist" aria-label="بخش‌های پنل بازیکن">
-      <button type="button" class="tab" data-usertab="overview">پیشخوان و امتیازات</button>
-      <button type="button" class="tab" data-usertab="upcoming">رزروهای پیش‌رو</button>
-      <button type="button" class="tab" data-usertab="history">تاریخچه بازی‌ها</button>
-      <button type="button" class="tab" data-usertab="plan">پلن عضویت فعال</button>
-      <button type="button" class="tab" data-usertab="fav">علاقه‌مندی‌ها</button>
-      <button type="button" class="tab" data-usertab="profile">اطلاعات پروفایل</button>
-    </aside>
-    <div class="panel-main" id="user-panel-main"></div>
+<!-- ══════════ BLOG ══════════ -->
+<section class="view" id="view-blog" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">وبلاگ آموزشی کیوسک کلاب</h1>
+    <p class="view-lead">آموزش پدل از صفر، تاکتیک بازی دونفره و اخبار باشگاه — نوشتهٔ مربیان خودمان.</p>
+    <div id="blog-tabs" class="time-filters"></div>
+    <div id="blog-list" class="blog-list"></div>
   </div>
 </section>
 
-<!-- ================= پنل مدیریت ================= -->
-<section class="view hidden" id="view-admin">
-  <div class="view-head">
-    <h1>پنل مدیریت باشگاه</h1>
-    <p>نمای زنده عملکرد امروز باشگاه و ابزارهای عملیاتی.</p>
+<!-- ══════════ PLANS ══════════ -->
+<section class="view" id="view-plans" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">پلن‌های عضویت</h1>
+    <p class="view-lead">عضویت ماهانه فعال می‌شود و بلافاصله روی رزروهای بعدی‌تان اعمال می‌شود.</p>
+    <div id="plans-grid" class="plans-grid"></div>
   </div>
-  <div class="kpi-grid" id="kpi-grid"></div>
-  <div class="panel-card">
-    <h3>عملکرد هفته — مقایسه سه زمین</h3>
-    <div id="admin-chart"></div>
+</section>
+
+<!-- ══════════ FAVORITES ══════════ -->
+<section class="view" id="view-favorites" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">علاقه‌مندی‌ها</h1>
+    <div id="favorites-list"></div>
   </div>
-  <div class="panel-card">
-    <div class="section-head-row">
-      <h3>مدیریت رزروها</h3>
-      <button type="button" class="btn btn-ghost btn-sm" id="open-manual-book">ثبت رزرو حضوری / تلفنی</button>
-    </div>
-    <div class="table-filters">
-      <select id="filter-court" aria-label="فیلتر زمین"></select>
-      <select id="filter-status" aria-label="فیلتر وضعیت">
-        <option value="all">همه وضعیت‌ها</option>
-        <option value="confirmed">قطعی</option>
-        <option value="cancelled">لغو شده</option>
-      </select>
-      <input type="search" id="filter-search" class="input" placeholder="جستجوی نام، موبایل یا کد رهگیری" />
-    </div>
-    <div class="table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>کد</th><th>بازیکن</th><th>زمین</th><th>تاریخ</th><th>سانس</th><th>مبلغ</th><th>وضعیت</th><th>اقدام</th></tr></thead>
-        <tbody id="admin-tbody"></tbody>
-      </table>
+</section>
+
+<!-- ══════════ MAP ══════════ -->
+<section class="view" id="view-map" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">نقشه و مسیر</h1>
+    <div class="split">
+      <div id="map-diagram" class="map-diagram"></div>
+      <div class="map-info">
+        <h2>آدرس</h2>
+        <p>قائم‌شهر، بلوار طالب‌آبادی، نبش کوچه لاله، باشگاه کیوسک کلاب</p>
+        <h2>ساعات مجموعه</h2>
+        <p>همه‌روزه ۰۸:۰۰ تا ۲۴:۰۰ — پذیرش، کافه و گرم‌کردن</p>
+        <h2>مسیر از سمت میدان سپاه</h2>
+        <p>به سمت بلوار طالب‌آبادی، ۸۰۰ متر بعد از پمپ بنزین، پارکینگ اختصاصی سمت راست.</p>
+        <h2>تلفن</h2>
+        <p><span dir="ltr">۰۱۱-۴۲۲۳۱۸۹۰</span></p>
+      </div>
     </div>
   </div>
-  <div class="admin-two-col">
-    <div class="panel-card">
-      <h3>مسدودسازی سانس</h3>
-      <form class="form-grid" id="block-form">
-        <label>زمین<select id="block-court" data-court-select></select></label>
-        <label>روز<select id="block-date"></select></label>
-        <label>سانس<select id="block-slot"></select></label>
-        <label class="span-2">دلیل (مثلاً شست‌وشوی چمن)
-          <input type="text" id="block-reason" class="input" required />
-        </label>
-        <button class="btn btn-accent" type="submit">مسدود کن</button>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section class="view" id="view-about" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">درباره کیوسک کلاب</h1>
+    <div class="prose">
+      <p>کیوسک کلاب از سال ۱۴۰۱ در قائم‌شهر کارش را با یک زمین آغاز کرد؛ امروز سه زمین استاندارد FIP داریم و هر هفته بیش از ۳۰۰ بازیکن اینجا تمرین می‌کنند.</p>
+      <h2>مشخصات زمین‌ها</h2>
+      <p>شیشه سکوریت ۱۲ میل، توری استیل ضدزنگ، چمن مصنوعی آبی FIP با پرشدگی ۱۵ کیلوگرم بر مترمربع و نورپردازی LED ضدخیرگی ۳۰۰ لوکس.</p>
+      <h2>امکانات</h2>
+      <p>رختکن و دوش، کافه پدل، اجاره راکت و توپ، پارکینگ اختصاصی و مربی حضوری برای کلاس‌های خصوصی.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CONTACT ══════════ -->
+<section class="view" id="view-contact" hidden>
+  <div class="container narrow">
+    <h1 class="view-title">تماس با ما</h1>
+    <div class="split">
+      <div class="prose">
+        <p>قائم‌شهر، بلوار طالب‌آبادی، نبش کوچه لاله</p>
+        <p><span dir="ltr">۰۱۱-۴۲۲۳۱۸۹۰</span></p>
+        <p>همه‌روزه ۰۸:۰۰ تا ۲۴:۰۰</p>
+      </div>
+      <form id="contact-form" class="stack-form" novalidate>
+        <label for="cf-name">نام</label>
+        <input id="cf-name" name="name" required>
+        <label for="cf-phone">شماره تماس</label>
+        <input id="cf-phone" name="phone" inputmode="tel" required>
+        <label for="cf-msg">پیام</label>
+        <textarea id="cf-msg" name="msg" rows="4" required></textarea>
+        <p id="contact-error" class="form-error" role="alert" hidden></p>
+        <button class="btn-primary" type="submit">ارسال پیام</button>
+        <p id="contact-ok" class="form-ok" role="status" hidden></p>
       </form>
-      <ul class="plain-list" id="block-list"></ul>
-    </div>
-    <div class="panel-card">
-      <h3>تعرفه زمین‌ها و تخفیف صبح</h3>
-      <form class="form-grid" id="pricing-form">
-        <label>زمین ۱ (تومان)<input type="number" id="price-0" class="input" min="0" step="10000" required /></label>
-        <label>زمین ۲ (تومان)<input type="number" id="price-1" class="input" min="0" step="10000" required /></label>
-        <label>زمین ۳ (تومان)<input type="number" id="price-2" class="input" min="0" step="10000" required /></label>
-        <label>درصد تخفیف سانس‌های قبل از ۱۵:۰۰<input type="number" id="offpeak" class="input" min="0" max="60" required /></label>
-        <button class="btn btn-accent" type="submit">ذخیره تعرفه‌ها</button>
-      </form>
     </div>
   </div>
-  <div class="panel-card">
-    <h3>پیام‌های ارتباط با ما</h3>
-    <div id="inbox-list"></div>
+</section>
+
+<!-- ══════════ AUTH ══════════ -->
+<section class="view" id="view-auth" hidden>
+  <div class="container narrow auth-wrap">
+    <div class="auth-card">
+      <div class="seg auth-tabs">
+        <button class="seg-btn" id="tab-player">ورود بازیکن</button>
+        <button class="seg-btn" id="tab-admin">ورود مدیر</button>
+      </div>
+      <form id="login-form" class="stack-form" novalidate>
+        <label for="li-name">نام و نام خانوادگی</label>
+        <input id="li-name" required>
+        <label for="li-phone">شماره موبایل</label>
+        <input id="li-phone" inputmode="tel" required>
+        <p id="login-error" class="form-error" role="alert" hidden></p>
+        <button class="btn-primary" type="submit">ورود به حساب</button>
+      </form>
+      <div class="demo-logins">
+        <span>ورود سریع نمایشی:</span>
+        <button class="btn-ghost" data-demo-login="player">حسام عربی — بازیکن</button>
+        <button class="btn-ghost" data-demo-login="admin">مدیر باشگاه</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PLAYER PANEL ══════════ -->
+<section class="view" id="view-player" hidden>
+  <div class="container">
+    <h1 class="view-title">پنل بازیکن</h1>
+    <div id="player-body"></div>
+  </div>
+</section>
+
+<!-- ══════════ ADMIN PANEL ══════════ -->
+<section class="view" id="view-admin" hidden>
+  <div class="container">
+    <h1 class="view-title">پنل مدیریت باشگاه</h1>
+    <div id="admin-body"></div>
   </div>
 </section>
 
 </main>
 
-<!-- ===== ناوبری پایین موبایل ===== -->
-<nav class="bottom-nav" aria-label="ناوبری موبایل">
-  <button type="button" data-nav="home"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-8z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>خانه</span></button>
-  <button type="button" data-nav="booking"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.4"/></svg><span>رزرو</span></button>
-  <button type="button" data-nav="favorites"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-7-9.6A4 4 0 0 1 12 7a4 4 0 0 1 7 3.4c0 5-7 9.6-7 9.6z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>علاقه‌مندی</span></button>
-  <button type="button" data-nav="account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c1-3.7 3.8-5.3 7-5.3s6 1.6 7 5.3" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>حساب</span></button>
-</nav>
-
-<!-- ===== نوار جمع سبد ===== -->
-<div class="summary-bar hidden" id="summary-bar">
-  <span id="summary-count"></span>
-  <strong id="summary-total"></strong>
-  <button type="button" class="btn btn-accent" id="open-checkout">ادامه و پرداخت</button>
-</div>
-
-<!-- ===== مودال‌ها ===== -->
-<div class="modal-overlay hidden" id="checkout-modal" role="dialog" aria-modal="true">
-  <div class="modal">
-    <button type="button" class="modal-close" data-close aria-label="بستن">✕</button>
-    <div id="checkout-body"></div>
-  </div>
-</div>
-
-<div class="modal-overlay hidden" id="confirm-modal" role="dialog" aria-modal="true">
-  <div class="modal modal-sm">
-    <h3 id="confirm-title"></h3>
-    <p id="confirm-text"></p>
-    <div class="modal-actions">
-      <button class="btn btn-accent" type="button" id="confirm-yes">تایید</button>
-      <button class="btn btn-ghost" type="button" id="confirm-no">انصراف</button>
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <strong>کیوسک کلاب</strong>
+      <p>باشگاه تخصصی پدل قائم‌شهر</p>
+      <p>همه‌روزه ۰۸:۰۰ تا ۲۴:۰۰</p>
     </div>
+    <nav class="footer-links" aria-label="پیوندهای سریع">
+      <a href="#" data-nav="home">رزرو آنلاین</a>
+      <a href="#" data-nav="plans">پلن‌های عضویت</a>
+      <a href="#" data-nav="blog">وبلاگ آموزشی</a>
+      <a href="#" data-nav="favorites">علاقه‌مندی‌ها</a>
+      <a href="#" data-nav="contact">تماس با ما</a>
+    </nav>
+    <button id="footer-reset" class="btn-ghost-danger">بازنشانی داده‌های دمو</button>
   </div>
-</div>
+</footer>
 
-<div class="modal-overlay hidden" id="article-modal" role="dialog" aria-modal="true">
-  <div class="modal">
-    <button type="button" class="modal-close" data-close aria-label="بستن">✕</button>
-    <div id="article-modal-body"></div>
-  </div>
-</div>
+<!-- ══════════ STICKY CART BAR ══════════ -->
+<div id="cart-bar" class="cart-bar" hidden aria-live="polite"></div>
 
-<div class="modal-overlay hidden" id="manual-modal" role="dialog" aria-modal="true">
-  <div class="modal modal-sm">
-    <button type="button" class="modal-close" data-close aria-label="بستن">✕</button>
-    <h3>ثبت رزرو حضوری / تلفنی</h3>
-    <form class="form-grid" id="manual-form">
-      <label>نام بازیکن<input type="text" id="manual-name" class="input" required /></label>
-      <label>شماره موبایل<input type="tel" id="manual-phone" class="input" pattern="09[0-9]{9}" required /></label>
-      <label>زمین<select id="manual-court" data-court-select></select></label>
-      <label>روز<select id="manual-date"></select></label>
-      <label>سانس<select id="manual-slot"></select></label>
-      <button class="btn btn-accent" type="submit">ثبت رزرو</button>
-    </form>
-  </div>
+<!-- ══════════ MODAL ══════════ -->
+<div id="modal-root" class="modal-root" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" id="modal-card"></div>
 </div>
-
-<div id="toast-container" aria-live="polite"></div>
 
 <script src="./app.js"></script>
 </body>
