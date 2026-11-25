@@ -133,23 +133,7 @@ const PROVINCES = {
 };
 const REGIONAL_CITIES = ['قائم‌شهر', 'ساری', 'بابل', 'آمل', 'بابلسر', 'نوشهر', 'چالوس', 'رامسر', 'بهشهر', 'نکا'];
 
-/* مربیان، کلاس‌ها، محصولات، مقالات، پلن‌ها */
-const COACHES = [
-  { id: 'c1', name: 'نیما صادقی', cred: 'مربی درجه ۱ فدراسیون، ۶ سال سابقه، سرمربی آکادمی باشگاه', rate: '۴۵۰,۰۰۰ تومان هر جلسه', init: 'ن' },
-  { id: 'c2', name: 'سارا موسوی', cred: 'مربی لیگ بانوان، مدرس یوگا ورزشی، متخصص تکنیک دیوار', rate: '۴۰۰,۰۰۰ تومان هر جلسه', init: 'س' },
-  { id: 'c3', name: 'رضا خلیل‌زاده', cred: 'بازیکن سابق لیگ برتر پدل، مربی تاکتیک بازی دوبل', rate: '۵۰۰,۰۰۰ تومان هر جلسه', init: 'ر' },
-];
-const EVENTS = [
-  { id: 'e1', kind: 'کلاس مقدماتی', title: 'دوره شروع پدل برای تازه‌کارها', meta: 'شنبه و دوشنبه، ۱۷:۰۰ — ۴ جلسه، زمین ۲ — ظرفیت باقی‌مانده: ۵ نفر', featured: false },
-  { id: 'e2', kind: 'کلاس تاکتیک', title: 'کلینیک تاکتیک بازی دوبل', meta: 'چهارشنبه، ۱۹:۳۰ — ۲ جلسه، زمین VIP — ویژه بازیکنان متوسط به بالا', featured: false },
-  { id: 'e3', kind: 'تورنمنت', title: 'تورنمنت جمعه‌شهر اُپن قائم‌شهر', meta: 'جمعه هفته آینده، ۱۰:۰۰ — بخش دوبل، جایزه اول: عضویت طلایی رایگان', featured: true },
-];
-const PRODUCTS = [
-  { id: 'p1', name: 'راکت پدل کربن مدل پرو', cat: 'راکت', price: 4850000, desc: 'توزین ۳۶۵ گرم، سطح کربن ۱۲K' },
-  { id: 'p2', name: 'قوطی ۳ عددی توپ FIP', cat: 'توپ', price: 380000, desc: 'توپ رسمی مسابقات، فشار استاندارد' },
-  { id: 'p3', name: 'ساک حرفه‌ای پدل', cat: 'لوازم', price: 1290000, desc: 'جایگاه راکت، محفظه کفش، ضدآب' },
-  { id: 'p4', name: 'گریپ و مچ‌بند حرفه‌ای', cat: 'لوازم', price: 190000, desc: 'بسته ۳ عددی گریپ جذب عرق + مچ‌بند' },
-];
+/* مقالات و پلن‌ها */
 const ARTICLES = [
   { id: 'a1', tag: 'آموزش', title: 'پدل را از کجا شروع کنیم؟ راهنمای اولین جلسه',
     excerpt: 'قوانین امتیازگیری، سرویس زیر کمر و چیدمان زمین — هر آنچه برای اولین بازی لازم دارید.',
@@ -159,7 +143,7 @@ const ARTICLES = [
     body: ['معماهای پدل با یک اصل ساده حل می‌شود: تیمِ تهاجمی جلو می‌ایستد و تیمِ دفاعی عقب. اشتباه رایج بازیکنان تازه‌کار این است که بعد از هر لوپ، در نیمه زمین می‌مانند.', 'قاعده طلایی: تا وقتی توپ بالای تورِ شما رد شده و حریف تهاجمی است، عقب بمانید. به محض اینکه لوب کوتاه دادید یا توپ به دیوار خورد و شُل شد، به سمت تور حرکت کنید.', 'در کلینیک تاکتیک دوبل باشگاه، همین الگو روی زمین VIP تمرین می‌شود؛ ضبط بازی هم انجام می‌شود تا اشتباه‌های جابه‌جایی دیده شود.'] },
   { id: 'a3', tag: 'باشگاه', title: 'چهارشنبه‌شب‌ها زیر نورافکن: گزارش لیگ داخلی زمین VIP',
     excerpt: 'هفته سی‌ودوم لیگ داخلی با رکورد شرکت بازیکنان برگزار شد؛ گزارش کامل از دیدار فینال.',
-    body: ['فینال لیگ داخلی این فصل با حضور ۳۲ تیم دوبل روی زمین VIP مرکزی برگزار شد و دیدار نهایی در دو ست پیاپی به تیم «دیوار آبی» رسید.', 'بازی‌های شب زیر نور LED با تهویه ضدخیرگی انجام می‌شود؛ همین ویژگی زمین سرپوشیده باعث شده لیگ در سرمای مازندران هم بدون توقف ادامه پیدا کند.', 'فصل بعد از مهرماه آغاز می‌شود و ثبت‌نام از طریق فرم «درخواست تورنمنت» در صفحه تماس با ما انجام می‌شود.'] },
+    body: ['فینال لیگ داخلی این فصل با حضور ۳۲ تیم دوبل روی زمین VIP مرکزی برگزار شد و دیدار نهایی در دو ست پیاپی به تیم «دیوار آبی» رسید.', 'بازی‌های شب زیر نور LED با تهویه ضدخیرگی انجام می‌شود؛ همین ویژگی زمین سرپوشیده باعث شده لیگ در سرمای مازندران هم بدون توقف ادامه پیدا کند.', 'ثبت‌نام فصل بعد از طریق فرم تماس در همین سایت انجام می‌شود.'] },
 ];
 const PLANS = [
   { id: 'bronze', name: 'پلن برنزی', price: 1450000, feats: ['۴ سانس ماهانه روی همه زمین‌ها', 'رزرو تا ۷ روز زودتر', 'بدون تخفیف اضافه'] },
@@ -169,7 +153,7 @@ const PLANS = [
 
 /* ---------- State و LocalStorage ---------- */
 let state = null;
-let ui = { view: 'home', court: 0, dayOffset: 0, cart: [], userTab: 'overview', shopCat: 'همه', lastView: 'home' };
+let ui = { view: 'home', court: 0, dayOffset: 0, cart: [], userTab: 'overview', lastView: 'home' };
 
 function seedState() {
   const today = dateKeyOf(new Date());
@@ -194,11 +178,10 @@ function seedState() {
       mk(0, addDays(today, -7), 18, SAMPLE_USER.name, SAMPLE_USER.phone, 'cancelled'),
       mk(1, addDays(today, -1), 12, 'رضا نوری', '09155544332', 'cancelled'),
     ],
-    favorites: { courts: [0], coaches: ['c1'], products: ['p2'] },
+    favorites: { courts: [0] },
     activePlan: null,
-    orders: [],
     messages: [
-      { id: uid(), name: 'مهدی برقعی', phone: '09123334455', subject: 'درخواست تورنمنت', body: 'سلام، برای تورنمنت جمعه‌شهر دو تیم دوبل ثبت‌نام می‌کنیم.', createdAt: Date.now() - 86400000 },
+      { id: uid(), name: 'مهدی برقعی', phone: '09123334455', subject: 'پیام عمومی', body: 'سلام، شرایط رزرو دو سانس پیاپی در روز جمعه چطور است؟', createdAt: Date.now() - 86400000 },
     ],
     session: { role: 'guest' },
   };
@@ -256,7 +239,7 @@ function qrSvg(text) {
 }
 
 /* ---------- ناوبری و نقش‌ها ---------- */
-const VIEWS = ['home', 'plans', 'shop', 'map', 'favorites', 'blog', 'about', 'contact', 'auth', 'user', 'admin'];
+const VIEWS = ['home', 'plans', 'map', 'favorites', 'blog', 'about', 'contact', 'auth', 'user', 'admin'];
 
 function renderSessionBar() {
   const guest = state.session.role === 'guest';
@@ -290,7 +273,6 @@ function showView(name) {
   window.scrollTo({ top: 0 });
   if (name === 'home') renderBookingView();
   if (name === 'plans') renderPlans();
-  if (name === 'shop') renderShop();
   if (name === 'favorites') renderFavorites();
   if (name === 'blog') renderBlog();
   if (name === 'user') renderUser();
@@ -306,11 +288,8 @@ document.addEventListener('click', (e) => {
 });
 
 function handleCatTile(cat) {
-  const map = { courts: 'booking', coach: 'coaches-section', class: 'events-section', tournament: 'events-section', shop: 'shop', plans: 'plans', racket: 'booking', map: 'map' };
-  if (['shop', 'plans', 'map'].includes(cat)) { showView(cat); return; }
-  if (cat === 'courts' || cat === 'racket') { showView('booking'); return; }
-  showView('home');
-  setTimeout(() => $('#' + map[cat])?.scrollIntoView({ behavior: 'smooth' }), 60);
+  if (['plans', 'map'].includes(cat)) { showView(cat); return; }
+  showView('booking');
 }
 
 $('#nav-cta').addEventListener('click', () => showView('booking'));
@@ -341,13 +320,9 @@ function fillProvinceSelects() {
 /* جستجوی هیرو */
 $('#hero-search-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  const cat = $('#us-category').value;
-  const catMap = { all: 'booking', courts: 'booking', coach: 'coach', class: 'class', shop: 'shop', tournament: 'tournament' };
-  handleCatTile(catMap[cat] || 'booking');
-  if (cat === 'all' || cat === 'courts') {
-    const idx = $('#us-date').selectedIndex;
-    if (idx >= 0) { ui.dayOffset = idx; renderBookingView(); }
-  }
+  showView('booking');
+  const idx = $('#us-date').selectedIndex;
+  if (idx >= 0) { ui.dayOffset = idx; renderBookingView(); }
 });
 
 /* ---------- نوار شهرهای منطقه ---------- */
@@ -372,15 +347,11 @@ function toggleFav(kind, id) {
   renderFavBadge();
   renderCityPills();
   renderBookingView();
-  renderCoaches();
-  renderShopTeaser();
-  if (ui.view === 'shop') renderShop();
   if (ui.view === 'favorites') renderFavorites();
   if (ui.view === 'user' && ui.userTab === 'fav') renderUser();
 }
 function renderFavBadge() {
-  const f = state.favorites;
-  const n = f.courts.length + f.coaches.length + f.products.length;
+  const n = state.favorites.courts.length;
   $('#fav-badge').textContent = toFa(n);
 }
 
@@ -563,143 +534,6 @@ function renderTicket(code) {
     }));
 }
 
-/* ---------- مربیان ---------- */
-function renderCoaches() {
-  $('#coach-grid').innerHTML = COACHES.map((c) => {
-    const fav = state.favorites.coaches.includes(c.id);
-    return `
-      <div class="coach-card">
-        <button type="button" class="coach-fav" data-cfav2="${c.id}" aria-pressed="${fav}" aria-label="افزودن ${esc(c.name)} به علاقه‌مندی‌ها">${heartSvg(fav)}</button>
-        <div class="coach-avatar" aria-hidden="true">${c.init}</div>
-        <h4>${c.name}</h4>
-        <p class="coach-cred">${c.cred}</p>
-        <p class="muted">${c.rate}</p>
-        <button type="button" class="btn btn-ghost btn-sm" data-coach="${c.id}">رزرو کلاس با مربی</button>
-      </div>`;
-  }).join('');
-  $$('[data-cfav2]').forEach((b) => b.addEventListener('click', () => toggleFav('coaches', b.dataset.cfav2)));
-  $$('[data-coach]').forEach((b) => b.addEventListener('click', () => openCoachModal(b.dataset.coach)));
-}
-function openCoachModal(id) {
-  const c = COACHES.find((x) => x.id === id);
-  $('#coach-modal-body').innerHTML = `
-    <h3>رزرو کلاس با ${c.name}</h3>
-    <p class="muted">${c.cred}</p>
-    <form class="form-grid" id="coach-class-form">
-      <label>نام شما<input type="text" id="cc-name" class="input" value="${esc(state.session.role === 'player' ? SAMPLE_USER.name : '')}" required /></label>
-      <label>موبایل<input type="tel" id="cc-phone" class="input" pattern="09[0-9]{9}" value="${esc(state.session.role === 'player' ? SAMPLE_USER.phone : '')}" required /></label>
-      <label>روز ترجیحی<select id="cc-day">${weekKeys().map((k, i) => `<option value="${k}">${i === 0 ? 'امروز' : weekdayFa(k)} ${jalaliLabel(k).short}</option>`).join('')}</select></label>
-      <label>سطح شما<select id="cc-level"><option>مبتدی</option><option>متوسط</option><option>پیشرفته</option></select></label>
-      <button class="btn btn-accent span-2" type="submit">ثبت درخواست کلاس (${c.rate})</button>
-    </form>`;
-  $('#coach-modal').classList.remove('hidden');
-  $('#coach-class-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = $('#cc-name').value.trim(), phone = toEn($('#cc-phone').value.trim());
-    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
-    state.messages.push({ id: uid(), name, phone, subject: 'هماهنگی کلاس', body: `درخواست کلاس با مربی ${c.name}، روز ${$('#cc-day').selectedOptions[0].textContent}، سطح ${$('#cc-level').value}`, createdAt: Date.now() });
-    saveState();
-    $('#coach-modal').classList.add('hidden');
-    toast('درخواست کلاس ثبت شد؛ مربی باشگاه تماس می‌گیرد');
-  });
-}
-
-/* ---------- کلاس‌ها و تورنمنت ---------- */
-function renderEvents() {
-  $('#event-grid').innerHTML = EVENTS.map((e) => `
-    <div class="event-card ${e.featured ? 'featured' : ''}">
-      <span class="event-kind">${e.kind}</span>
-      <h4>${e.title}</h4>
-      <p class="event-meta">${e.meta}</p>
-      <button type="button" class="btn ${e.featured ? 'btn-accent' : 'btn-ghost'} btn-sm" data-event="${e.id}">ثبت‌نام</button>
-    </div>`).join('');
-  $$('[data-event]').forEach((b) => b.addEventListener('click', () => openEventModal(b.dataset.event)));
-}
-function openEventModal(id) {
-  const e = EVENTS.find((x) => x.id === id);
-  $('#event-modal-body').innerHTML = `
-    <h3>ثبت‌نام: ${e.title}</h3>
-    <p class="muted">${e.meta}</p>
-    <form class="form-grid" id="event-reg-form">
-      <label>نام و نام خانوادگی<input type="text" id="ev-name" class="input" required /></label>
-      <label>موبایل<input type="tel" id="ev-phone" class="input" pattern="09[0-9]{9}" required /></label>
-      <label class="span-2">نام هم‌تیمی (در صورت بازی دوبل)<input type="text" id="ev-mate" class="input" /></label>
-      <button class="btn btn-accent span-2" type="submit">ثبت‌نام در ${e.kind}</button>
-    </form>`;
-  $('#event-modal').classList.remove('hidden');
-  $('#event-reg-form').addEventListener('submit', (ev) => {
-    ev.preventDefault();
-    const name = $('#ev-name').value.trim(), phone = toEn($('#ev-phone').value.trim());
-    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
-    state.messages.push({ id: uid(), name, phone, subject: 'درخواست تورنمنت', body: `ثبت‌نام «${e.title}»${$('#ev-mate').value.trim() ? ' با هم‌تیمی: ' + $('#ev-mate').value.trim() : ''}`, createdAt: Date.now() });
-    saveState();
-    $('#event-modal').classList.add('hidden');
-    toast('ثبت‌نام شما دریافت شد');
-  });
-}
-
-/* ---------- فروشگاه ---------- */
-const productArt = (p) => {
-  if (p.cat === 'راکت') return '<svg viewBox="0 0 48 48"><ellipse cx="21" cy="17" rx="11" ry="16" transform="rotate(28 21 17)" fill="none" stroke="#F4C860" stroke-width="2.4"/><path d="M28 30 39 42" stroke="#34D399" stroke-width="3" stroke-linecap="round"/></svg>';
-  if (p.cat === 'توپ') return '<svg viewBox="0 0 48 48"><circle cx="18" cy="28" r="9" fill="none" stroke="#F4C860" stroke-width="2.4"/><circle cx="31" cy="20" r="9" fill="none" stroke="#34D399" stroke-width="2.4"/><circle cx="27" cy="32" r="9" fill="none" stroke="#9FB6CB" stroke-width="2"/></svg>';
-  if (p.cat === 'کفش') return '<svg viewBox="0 0 48 48"><path d="M8 32c0-4 4-6 8-6l8-8 4 6 8 4c4 2 4 6 0 6H10z" fill="none" stroke="#F4C860" stroke-width="2.2"/></svg>';
-  return '<svg viewBox="0 0 48 48"><path d="M10 18h28l-2 20H12z" fill="none" stroke="#F4C860" stroke-width="2.4"/><path d="M18 18v-4a6 6 0 0 1 12 0v4" fill="none" stroke="#34D399" stroke-width="2.4"/></svg>';
-};
-function productCardHtml(p) {
-  const fav = state.favorites.products.includes(p.id);
-  return `
-    <div class="product-card">
-      <button type="button" class="product-fav" data-pfav="${p.id}" aria-pressed="${fav}" aria-label="افزودن ${esc(p.name)} به علاقه‌مندی‌ها">${heartSvg(fav)}</button>
-      <div class="product-art" aria-hidden="true">${productArt(p)}</div>
-      <h4>${p.name}</h4>
-      <p class="product-cat">${p.cat} — ${p.desc}</p>
-      <p class="product-price num">${money(p.price)}</p>
-      <div class="product-actions">
-        <button type="button" class="btn btn-accent btn-sm" data-order="${p.id}">افزودن به سبد</button>
-      </div>
-    </div>`;
-}
-function renderShopTeaser() {
-  $('#shop-teaser-grid').innerHTML = PRODUCTS.map(productCardHtml).join('');
-  bindProductButtons($('#shop-teaser-grid'));
-}
-function renderShop() {
-  const cats = ['همه', ...new Set(PRODUCTS.map((p) => p.cat))];
-  $('#shop-filter').innerHTML = cats.map((c) =>
-    `<button type="button" class="${ui.shopCat === c ? 'active' : ''}" data-shopcat="${c}">${c}</button>`).join('');
-  $$('#shop-filter button').forEach((b) => b.addEventListener('click', () => { ui.shopCat = b.dataset.shopcat; renderShop(); }));
-  const list = ui.shopCat === 'همه' ? PRODUCTS : PRODUCTS.filter((p) => p.cat === ui.shopCat);
-  $('#shop-grid').innerHTML = list.length ? list.map(productCardHtml).join('')
-    : '<p class="muted">کالایی در این دسته نیست.</p>';
-  bindProductButtons($('#shop-grid'));
-}
-function bindProductButtons(root) {
-  $$('[data-pfav]', root).forEach((b) => b.addEventListener('click', () => toggleFav('products', b.dataset.pfav)));
-  $$('[data-order]', root).forEach((b) => b.addEventListener('click', () => openOrderModal(b.dataset.order)));
-}
-function openOrderModal(id) {
-  const p = PRODUCTS.find((x) => x.id === id);
-  $('#checkout-body').innerHTML = `
-    <h3>سفارش: ${p.name}</h3>
-    <div class="summary-box"><div class="row"><span>${p.desc}</span><span class="num">${money(p.price)}</span></div></div>
-    <form class="form-grid" id="order-form">
-      <label>نام شما<input type="text" id="or-name" class="input" required /></label>
-      <label>موبایل<input type="tel" id="or-phone" class="input" pattern="09[0-9]{9}" required /></label>
-      <label class="span-2">توضیح (سایز، رنگ یا زمان تحویل حضوری)<input type="text" id="or-note" class="input" /></label>
-      <button class="btn btn-accent span-2" type="submit">ثبت سفارش</button>
-    </form>`;
-  $('#checkout-modal').classList.remove('hidden');
-  $('#order-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = $('#or-name').value.trim(), phone = toEn($('#or-phone').value.trim());
-    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
-    state.orders.push({ id: uid(), productId: p.id, name, phone, note: $('#or-note').value.trim(), price: p.price, createdAt: Date.now() });
-    saveState();
-    $('#checkout-modal').classList.add('hidden');
-    toast('سفارش شما ثبت شد؛ برای هماهنگی تحویل تماس می‌گیریم');
-  });
-}
-
 /* ---------- مقالات ---------- */
 function articleCardHtml(a) {
   return `
@@ -767,27 +601,20 @@ function renderPlans() {
 function renderFavorites() {
   const f = state.favorites;
   const fc = f.courts.map((i) => COURTS[i]).filter(Boolean);
-  const cc = COACHES.filter((c) => f.coaches.includes(c.id));
-  const pc = PRODUCTS.filter((p) => f.products.includes(p.id));
-  if (!fc.length && !cc.length && !pc.length) {
+  if (!fc.length) {
     $('#favorites-content').innerHTML = `
       <div class="fav-empty">
-        <h3>هنوز چیزی به علاقه‌مندی‌ها اضافه نکرده‌اید</h3>
-        <p>روی قلبِ هر زمین، مربی یا کالا بزنید تا اینجا ذخیره شود.</p>
+        <h3>هنوز زمینی به علاقه‌مندی‌ها اضافه نکرده‌اید</h3>
+        <p>روی قلبِ هر زمین بزنید تا اینجا ذخیره شود.</p>
         <button type="button" class="btn btn-accent" data-nav="booking">مشاهده زمین‌ها</button>
       </div>`;
     return;
   }
   $('#favorites-content').innerHTML = `
-    ${fc.length ? `<div class="fav-group"><h3>زمین‌ها</h3><div class="court-grid">${fc.map((c) => `
+    <div class="fav-group"><h3>زمین‌ها</h3><div class="court-grid">${fc.map((c) => `
       <div class="court-card"><h4>${c.name}</h4><p class="court-spec">${c.spec}</p>
       <p class="court-price">${money(state.settings.prices[c.id])} <small>/ ۹۰ دقیقه</small></p>
-      <button type="button" class="btn btn-ghost btn-sm" data-nav="booking">مشاهده سانس‌ها</button></div>`).join('')}</div></div>` : ''}
-    ${cc.length ? `<div class="fav-group"><h3>مربیان</h3><div class="coach-grid">${cc.map((c) => `
-      <div class="coach-card"><div class="coach-avatar">${c.init}</div><h4>${c.name}</h4>
-      <p class="coach-cred">${c.cred}</p></div>`).join('')}</div></div>` : ''}
-    ${pc.length ? `<div class="fav-group"><h3>کالاها</h3><div class="product-grid">${pc.map(productCardHtml).join('')}</div></div>` : ''}`;
-  bindProductButtons($('#favorites-content'));
+      <button type="button" class="btn btn-ghost btn-sm" data-nav="booking">مشاهده سانس‌ها</button></div>`).join('')}</div></div>`;
 }
 
 /* ---------- نقشه ---------- */
@@ -974,12 +801,9 @@ function renderUser() {
   if (ui.userTab === 'fav') {
     main.innerHTML = '<h3>علاقه‌مندی‌ها</h3>' + '<div id="user-fav-inner"></div>';
     const f = state.favorites;
-    $('#user-fav-inner').innerHTML = `
-      ${f.courts.length ? '<div class="fav-group"><h4>زمین‌ها</h4><div class="court-grid">' + f.courts.map((i) => `<div class="court-card"><h4>${COURTS[i].name}</h4><p class="court-price num">${money(state.settings.prices[i])}</p></div>`).join('') + '</div></div>' : ''}
-      ${f.coaches.length ? '<div class="fav-group"><h4>مربیان</h4><div class="coach-grid">' + f.coaches.map((id) => { const c = COACHES.find((x) => x.id === id); return `<div class="coach-card"><div class="coach-avatar">${c.init}</div><h4>${c.name}</h4></div>`; }).join('') + '</div></div>' : ''}
-      ${f.products.length ? '<div class="fav-group"><h4>کالاها</h4><div class="product-grid">' + f.products.map((id) => productCardHtml(PRODUCTS.find((x) => x.id === id))).join('') + '</div></div>' : ''}
-      ${(!f.courts.length && !f.coaches.length && !f.products.length) ? '<div class="fav-empty"><p>لیست علاقه‌مندی‌ها خالی است.</p><button type="button" class="btn btn-accent" data-nav="favorites">رفتن به صفحه علاقه‌مندی‌ها</button></div>' : ''}`;
-    bindProductButtons($('#user-fav-inner'));
+    $('#user-fav-inner').innerHTML = f.courts.length
+      ? '<div class="fav-group"><h4>زمین‌ها</h4><div class="court-grid">' + f.courts.map((i) => `<div class="court-card"><h4>${COURTS[i].name}</h4><p class="court-price num">${money(state.settings.prices[i])}</p></div>`).join('') + '</div></div>'
+      : '<div class="fav-empty"><p>لیست علاقه‌مندی‌ها خالی است.</p><button type="button" class="btn btn-accent" data-nav="favorites">رفتن به صفحه علاقه‌مندی‌ها</button></div>';
     return;
   }
   if (ui.userTab === 'profile') {
@@ -1238,9 +1062,6 @@ function renderAll() {
   fillProvinceSelects();
   renderCityPills();
   renderBookingView();
-  renderCoaches();
-  renderEvents();
-  renderShopTeaser();
   renderBlogTeaser();
   renderFavBadge();
   renderSessionBar();
