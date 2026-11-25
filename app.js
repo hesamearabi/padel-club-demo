@@ -1,6 +1,6 @@
 /* =====================================================
-   باشگاه پدل قائم‌شهر — دموی رزرو آنلاین (Vanilla JS)
-   داده‌ها در LocalStorage ذخیره می‌شوند.
+   باشگاه پدل قائم‌شهر — پورتال ورزشی و رزرو آنلاین
+   Vanilla JS + LocalStorage (کلید: padel-club-demo-v2)
    ===================================================== */
 'use strict';
 
@@ -10,20 +10,19 @@ const toFa = (v) => String(v).replace(/\d/g, (d) => FA_DIGITS[d]);
 const toEn = (v) => String(v).replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d)));
 const money = (n) => toFa(Number(n).toLocaleString('en-US')) + ' تومان';
 const pad2 = (n) => String(n).padStart(2, '0');
-const uid = () => (window.crypto && crypto.randomUUID ? uid()
-  : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10));
+const uid = () => 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
 const faTime = (h, m = 0) => toFa(pad2(h) + ':' + pad2(m));
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-/* ---------- تبدیل تاریخ میلادی به شمسی (الگوریتم jalaali) ---------- */
+/* ---------- تبدیل تاریخ میلادی به شمسی ---------- */
 function div_(a, b) { return ~~(a / b); }
 function mod_(a, b) { return a - ~~(a / b) * b; }
 const JALALI_BREAKS = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
 
 function jalCal(jy) {
   let bl = JALALI_BREAKS.length, gy = jy + 621, leapJ = -14, jp = JALALI_BREAKS[0], jm, jump = 0, leap, n, i;
-  if (jy < jp || jy >= JALALI_BREAKS[bl - 1]) throw new Error('Jalali year out of range');
   for (i = 1; i < bl; i++) {
     jm = JALALI_BREAKS[i];
     if (jy < jm) break;
@@ -81,28 +80,30 @@ const addDays = (dateKey, n) => {
   const dt = new Date(y, m - 1, d); dt.setDate(dt.getDate() + n);
   return dateKeyOf(dt);
 };
+const weekKeys = () => Array.from({ length: 7 }, (_, i) => addDays(dateKeyOf(new Date()), i));
 
 /* ---------- داده‌های پایه ---------- */
+const CLUB = {
+  name: 'باشگاه پدل قائم‌شهر',
+  addr: 'قائم‌شهر، بلوار قائم‌آباد، نبش خیابان گلستان، مجموعه ورزشی شهید پدل',
+  phone: '۰۱۱-۴۲۳۴۵۶۷۸',
+  hours: '۰۸:۰۰ تا ۲۴:۰۰',
+};
 const COURTS = [
-  {
-    id: 0, name: 'زمین ۱ — فول پانوراما روباز', short: 'فول پانوراما',
-    spec: 'شیشه سکوریت ۱۲ میل بدون ستون مزاحم، چمن مصنوعی آبی FIP، نورپردازی LED',
-  },
-  {
-    id: 1, name: 'زمین ۲ — استاندارد سرپوشیده', short: 'استاندارد سرپوشیده',
-    spec: 'سقف بلند ۱۰ متری، تهویه مطبوع، مناسب تمام فصول',
-  },
-  {
-    id: 2, name: 'زمین ۳ — زمین VIP مرکزی', short: 'VIP مرکزی',
-    spec: 'جایگاه تماشاگر، رختکن اختصاصی، کفپوش حرفه‌ای',
-  },
+  { id: 0, name: 'زمین ۱ — فول پانوراما روباز', short: 'فول پانوراما', rating: 4.9,
+    spec: 'شیشه سکوریت ۱۲ میل بدون ستون مزاحم، چمن مصنوعی آبی FIP، نورپردازی LED' },
+  { id: 1, name: 'زمین ۲ — استاندارد سرپوشیده', short: 'استاندارد سرپوشیده', rating: 4.7,
+    spec: 'سقف بلند ۱۰ متری، تهویه مطبوع چهارفصل، نورپردازی ضدخیرگی' },
+  { id: 2, name: 'زمین ۳ — زمین VIP مرکزی', short: 'VIP مرکزی', rating: 5.0,
+    spec: 'جایگاه تماشاگر، رختکن و دوش اختصاصی، کفپوش حرفه‌ای' },
 ];
-const SLOT_HOURS = [9, 10.5, 12, 13.5, 15, 16.5, 18, 19.5, 21, 22.5]; // شروع سانس‌های ۹۰ دقیقه‌ای
-const OFF_PEAK_BEFORE = 15;   // سانس‌هایی که قبل از ۱۵:۰۰ شروع می‌شوند
+const SLOT_HOURS = [9, 10.5, 12, 13.5, 15, 16.5, 18, 19.5, 21, 22.5];
+const OFF_PEAK_BEFORE = 15;
 const RACKET_FEE = 80000;
 const CANCEL_FREE_HOURS = 6;
 const SAMPLE_USER = { name: 'امیرحسین رضایی', phone: '09111234567', points: 240 };
-const STORAGE_KEY = 'padel-club-demo-v1';
+const ADMIN_CRED = { user: 'admin', pass: 'admin123' };
+const STORAGE_KEY = 'padel-club-demo-v2';
 
 const slotLabel = (h) => {
   const start = faTime(Math.floor(h), h % 1 ? 30 : 0);
@@ -111,15 +112,64 @@ const slotLabel = (h) => {
   return start + ' - ' + end;
 };
 const isOffPeak = (h) => h < OFF_PEAK_BEFORE;
+const slotPrice = (courtId, h) => {
+  const base = state.settings.prices[courtId];
+  return isOffPeak(h) ? Math.round(base * (1 - state.settings.offPeakDiscount / 100)) : base;
+};
+
+/* استان‌ها و شهرها */
+const MAZANDARAN_CITIES = ['قائم‌شهر', 'ساری', 'بابل', 'آمل', 'بابلسر', 'نوشهر', 'چالوس', 'رامسر', 'بهشهر', 'جویبار', 'نور', 'محمودآباد', 'فریدونکنار', 'نکاء', 'سوادکوه', 'سیمرغ'];
+const PROVINCES = {
+  'مازندران': MAZANDARAN_CITIES,
+  'تهران': ['تهران', 'کرج', 'اسلامشهر', 'شهریار', 'پاکدشت'],
+  'خراسان رضوی': ['مشهد', 'نیشابور', 'سبزوار', 'تربت حیدریه'],
+  'اصفهان': ['اصفهان', 'کاشان', 'خمینی‌شهر', 'نجف‌آباد'],
+  'فارس': ['شیراز', 'مرودشت', 'جهرم', 'لار'],
+  'آذربایجان شرقی': ['تبریز', 'مراغه', 'میانه', 'اهر'],
+  'گیلان': ['رشت', 'انزلی', 'لاهیجان', 'رودسر'],
+  'خوزستان': ['اهواز', 'آبادان', 'ماهشهر', 'بهبهان'],
+  'سیستان و بلوچستان': ['زاهدان', 'زابل', 'چابهار'],
+  'کرمان': ['کرمان', 'رفسنجان', 'سیرجان', 'بم'],
+};
+const REGIONAL_CITIES = ['قائم‌شهر', 'ساری', 'بابل', 'آمل', 'بابلسر', 'نوشهر', 'چالوس', 'رامسر', 'بهشهر', 'نکا'];
+
+/* مربیان، کلاس‌ها، محصولات، مقالات، پلن‌ها */
+const COACHES = [
+  { id: 'c1', name: 'نیما صادقی', cred: 'مربی درجه ۱ فدراسیون، ۶ سال سابقه، سرمربی آکادمی باشگاه', rate: '۴۵۰,۰۰۰ تومان هر جلسه', init: 'ن' },
+  { id: 'c2', name: 'سارا موسوی', cred: 'مربی لیگ بانوان، مدرس یوگا ورزشی، متخصص تکنیک دیوار', rate: '۴۰۰,۰۰۰ تومان هر جلسه', init: 'س' },
+  { id: 'c3', name: 'رضا خلیل‌زاده', cred: 'بازیکن سابق لیگ برتر پدل، مربی تاکتیک بازی دوبل', rate: '۵۰۰,۰۰۰ تومان هر جلسه', init: 'ر' },
+];
+const EVENTS = [
+  { id: 'e1', kind: 'کلاس مقدماتی', title: 'دوره شروع پدل برای تازه‌کارها', meta: 'شنبه و دوشنبه، ۱۷:۰۰ — ۴ جلسه، زمین ۲ — ظرفیت باقی‌مانده: ۵ نفر', featured: false },
+  { id: 'e2', kind: 'کلاس تاکتیک', title: 'کلینیک تاکتیک بازی دوبل', meta: 'چهارشنبه، ۱۹:۳۰ — ۲ جلسه، زمین VIP — ویژه بازیکنان متوسط به بالا', featured: false },
+  { id: 'e3', kind: 'تورنمنت', title: 'تورنمنت جمعه‌شهر اُپن قائم‌شهر', meta: 'جمعه هفته آینده، ۱۰:۰۰ — بخش دوبل، جایزه اول: عضویت طلایی رایگان', featured: true },
+];
+const PRODUCTS = [
+  { id: 'p1', name: 'راکت پدل کربن مدل پرو', cat: 'راکت', price: 4850000, desc: 'توزین ۳۶۵ گرم، سطح کربن ۱۲K' },
+  { id: 'p2', name: 'قوطی ۳ عددی توپ FIP', cat: 'توپ', price: 380000, desc: 'توپ رسمی مسابقات، فشار استاندارد' },
+  { id: 'p3', name: 'ساک حرفه‌ای پدل', cat: 'لوازم', price: 1290000, desc: 'جایگاه راکت، محفظه کفش، ضدآب' },
+  { id: 'p4', name: 'گریپ و مچ‌بند حرفه‌ای', cat: 'لوازم', price: 190000, desc: 'بسته ۳ عددی گریپ جذب عرق + مچ‌بند' },
+];
+const ARTICLES = [
+  { id: 'a1', tag: 'آموزش', title: 'پدل را از کجا شروع کنیم؟ راهنمای اولین جلسه',
+    excerpt: 'قوانین امتیازگیری، سرویس زیر کمر و چیدمان زمین — هر آنچه برای اولین بازی لازم دارید.',
+    body: ['پدل همیشه دوبل بازی می‌شود و زمین، ۲۰ در ۱۰ متر با دیوارهای شیشه‌ای است. توپ بعد از یک سرویس زیر کمر، باید در گوشه مقابل فرود بیاید و اجازه دارد پس از برخورد به دیوارِ زمینِ حریف، به هوا برخورد کند و سپس بازی ادامه یابد.', 'برای اولین جلسه، کفش پلاستیک‌دار مخصوص چمن مصنوعی بیاورید و اجاره ست راکت و توپ کافی است. مهم‌ترین مهارت اول، «بمب‌گذاری» دیوار پشت نیست؛ کنترل توپ با راکتِ کوتاه است.', 'در باشگاه ما هر پنجشنبه کلاس مقدماتی با مربی درجه ۱ فدراسیون برگزار می‌شود؛ ثبت‌نام از همین سایت و بدون پیش‌نیاز است.'] },
+  { id: 'a2', tag: 'تاکتیک', title: 'چرا حریف همیشه نقطه را می‌بَرد؟ اصل کنترل مرکز',
+    excerpt: 'در بازی دوبل، تیمی که جلوتر بایستد برنده است — به شرطی که بداند کی عقب برود.',
+    body: ['معماهای پدل با یک اصل ساده حل می‌شود: تیمِ تهاجمی جلو می‌ایستد و تیمِ دفاعی عقب. اشتباه رایج بازیکنان تازه‌کار این است که بعد از هر لوپ، در نیمه زمین می‌مانند.', 'قاعده طلایی: تا وقتی توپ بالای تورِ شما رد شده و حریف تهاجمی است، عقب بمانید. به محض اینکه لوب کوتاه دادید یا توپ به دیوار خورد و شُل شد، به سمت تور حرکت کنید.', 'در کلینیک تاکتیک دوبل باشگاه، همین الگو روی زمین VIP تمرین می‌شود؛ ضبط بازی هم انجام می‌شود تا اشتباه‌های جابه‌جایی دیده شود.'] },
+  { id: 'a3', tag: 'باشگاه', title: 'چهارشنبه‌شب‌ها زیر نورافکن: گزارش لیگ داخلی زمین VIP',
+    excerpt: 'هفته سی‌ودوم لیگ داخلی با رکورد شرکت بازیکنان برگزار شد؛ گزارش کامل از دیدار فینال.',
+    body: ['فینال لیگ داخلی این فصل با حضور ۳۲ تیم دوبل روی زمین VIP مرکزی برگزار شد و دیدار نهایی در دو ست پیاپی به تیم «دیوار آبی» رسید.', 'بازی‌های شب زیر نور LED با تهویه ضدخیرگی انجام می‌شود؛ همین ویژگی زمین سرپوشیده باعث شده لیگ در سرمای مازندران هم بدون توقف ادامه پیدا کند.', 'فصل بعد از مهرماه آغاز می‌شود و ثبت‌نام از طریق فرم «درخواست تورنمنت» در صفحه تماس با ما انجام می‌شود.'] },
+];
+const PLANS = [
+  { id: 'bronze', name: 'پلن برنزی', price: 1450000, feats: ['۴ سانس ماهانه روی همه زمین‌ها', 'رزرو تا ۷ روز زودتر', 'بدون تخفیف اضافه'] },
+  { id: 'silver', name: 'پلن نقره‌ای', price: 2690000, feats: ['۸ سانس ماهانه روی همه زمین‌ها', 'تخفیف ۱۰٪ روی همه رزروها', 'اولویت انتظار در سانس‌های پُر'] },
+  { id: 'gold', name: 'پلن طلایی VIP', price: 4290000, feats: ['۱۲ سانس ماهانه، همه زمین‌ها', 'تخفیف ۱۰٪ + راکت و توپ رایگان', 'دسترسی زودهنگام به تورنمنت‌ها'] },
+];
 
 /* ---------- State و LocalStorage ---------- */
 let state = null;
-let ui = { role: 'booking', court: 0, dayOffset: 0, cart: [], userTab: 'upcoming' };
-
-function slotPrice(courtId, h) {
-  const base = state.settings.prices[courtId];
-  return isOffPeak(h) ? Math.round(base * (1 - state.settings.offPeakDiscount / 100)) : base;
-}
+let ui = { view: 'home', court: 0, dayOffset: 0, cart: [], userTab: 'overview', shopCat: 'همه', lastView: 'home' };
 
 function seedState() {
   const today = dateKeyOf(new Date());
@@ -144,21 +194,27 @@ function seedState() {
       mk(0, addDays(today, -7), 18, SAMPLE_USER.name, SAMPLE_USER.phone, 'cancelled'),
       mk(1, addDays(today, -1), 12, 'رضا نوری', '09155544332', 'cancelled'),
     ],
+    favorites: { courts: [0], coaches: ['c1'], products: ['p2'] },
+    activePlan: null,
+    orders: [],
+    messages: [
+      { id: uid(), name: 'مهدی برقعی', phone: '09123334455', subject: 'درخواست تورنمنت', body: 'سلام، برای تورنمنت جمعه‌شهر دو تیم دوبل ثبت‌نام می‌کنیم.', createdAt: Date.now() - 86400000 },
+    ],
+    session: { role: 'guest' },
   };
 }
-
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) { state = JSON.parse(raw); return; }
-  } catch (e) { /* داده خراب است؛ دوباره seed می‌کنیم */ }
+  } catch (e) { /* داده خراب؛ دوباره seed */ }
   state = seedState();
   saveState();
 }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function resetState() { state = seedState(); saveState(); }
+function resetState() { state = seedState(); ui.cart = []; }
 
-/* ---------- توست ---------- */
+/* ---------- توست و مودال تایید ---------- */
 function toast(msg, type = 'success') {
   const el = document.createElement('div');
   el.className = 'toast ' + type;
@@ -166,8 +222,6 @@ function toast(msg, type = 'success') {
   $('#toast-container').appendChild(el);
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 300); }, 2600);
 }
-
-/* ---------- مودال تایید ---------- */
 let confirmResolve = null;
 function confirmBox(title, text, yesLabel = 'تایید') {
   $('#confirm-title').textContent = title;
@@ -198,84 +252,195 @@ function qrSvg(text) {
     if (!inFinder(x, y) && rnd() > .5) rects += `<rect x="${x * cell}" y="${y * cell}" width="${cell}" height="${cell}"/>`;
   }
   finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
-  return `<svg viewBox="0 0 ${N * cell} ${N * cell}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="#0F172A">${rects}</g></svg>`;
+  return `<svg viewBox="0 0 ${N * cell} ${N * cell}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="#0A1D33">${rects}</g></svg>`;
 }
 
-/* ---------- ناوبری نقش‌ها ---------- */
-function switchRole(role) {
-  ui.role = role;
-  $$('.role-btn, .bottom-nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.role === role));
-  ['booking', 'user', 'admin'].forEach((r) => $('#view-' + r).classList.toggle('hidden', r !== role));
-  $('#summary-bar').classList.toggle('hidden', !(role === 'booking' && ui.cart.length));
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (role === 'user') renderUser();
-  if (role === 'admin') renderAdmin();
-}
-$$('.role-btn, .bottom-nav-btn').forEach((b) =>
-  b.addEventListener('click', () => switchRole(b.dataset.role)));
+/* ---------- ناوبری و نقش‌ها ---------- */
+const VIEWS = ['home', 'plans', 'shop', 'map', 'favorites', 'blog', 'about', 'contact', 'auth', 'user', 'admin'];
 
-$('#reset-demo-btn').addEventListener('click', async () => {
-  const ok = await confirmBox('بازنشانی داده‌های دمو', 'تمام رزروها، مسدودسازی‌ها و تنظیمات به حالت اولیه برمی‌گردند. مطمئن هستید؟', 'بازنشانی');
-  if (!ok) return;
-  resetState(); ui.cart = []; renderAll();
-  toast('داده‌های دمو بازنشانی شد');
+function renderSessionBar() {
+  const guest = state.session.role === 'guest';
+  $('#auth-entry').classList.toggle('hidden', !guest);
+  $('#session-box').classList.toggle('hidden', guest);
+  if (!guest) $('#session-role-name').textContent =
+    state.session.role === 'admin' ? 'مدیر باشگاه' : SAMPLE_USER.name;
+}
+function logout() {
+  state.session = { role: 'guest' };
+  saveState();
+  renderSessionBar();
+  showView('home');
+  toast('از حساب خارج شدید');
+}
+$('#logout-btn').addEventListener('click', logout);
+$('#panel-entry').addEventListener('click', () => showView(state.session.role === 'admin' ? 'admin' : 'user'));
+
+function showView(name) {
+  if (name === 'account') {
+    name = state.session.role === 'admin' ? 'admin' : state.session.role === 'player' ? 'user' : 'auth';
+  }
+  if (name === 'booking') { showView('home'); $('#booking-section').scrollIntoView({ behavior: 'smooth' }); return; }
+  if (!VIEWS.includes(name)) name = 'home';
+  ui.view = name;
+  VIEWS.forEach((v) => $('#view-' + v).classList.toggle('hidden', v !== name));
+  $$('[data-nav]').forEach((b) => b.classList.toggle('active', b.dataset.nav === name));
+  $('#summary-bar').classList.toggle('hidden', !(name === 'home' && ui.cart.length));
+  $('#nav-links').classList.remove('open');
+  $('#menu-toggle').setAttribute('aria-expanded', 'false');
+  window.scrollTo({ top: 0 });
+  if (name === 'home') renderBookingView();
+  if (name === 'plans') renderPlans();
+  if (name === 'shop') renderShop();
+  if (name === 'favorites') renderFavorites();
+  if (name === 'blog') renderBlog();
+  if (name === 'user') renderUser();
+  if (name === 'admin') renderAdmin();
+}
+
+/* کلیک روی همه [data-nav] */
+document.addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-nav]');
+  if (nav) { showView(nav.dataset.nav); return; }
+  const cat = e.target.closest('.cat-tile');
+  if (cat) handleCatTile(cat.dataset.cat);
 });
+
+function handleCatTile(cat) {
+  const map = { courts: 'booking', coach: 'coaches-section', class: 'events-section', tournament: 'events-section', shop: 'shop', plans: 'plans', racket: 'booking', map: 'map' };
+  if (['shop', 'plans', 'map'].includes(cat)) { showView(cat); return; }
+  if (cat === 'courts' || cat === 'racket') { showView('booking'); return; }
+  showView('home');
+  setTimeout(() => $('#' + map[cat])?.scrollIntoView({ behavior: 'smooth' }), 60);
+}
+
+$('#nav-cta').addEventListener('click', () => showView('booking'));
+$('#menu-toggle').addEventListener('click', () => {
+  const nav = $('#nav-links');
+  const open = nav.classList.toggle('open');
+  $('#menu-toggle').setAttribute('aria-expanded', String(open));
+  $('#menu-toggle').setAttribute('aria-label', open ? 'بستن منو' : 'باز کردن منو');
+});
+
+/* ---------- انتخاب استانی شهر ---------- */
+function fillProvinceSelects() {
+  const provSel = $('#province-select'), citySel = $('#city-select');
+  provSel.innerHTML = Object.keys(PROVINCES).map((p) => `<option${p === 'مازندران' ? ' selected' : ''}>${p}</option>`).join('');
+  const fillCities = () => {
+    citySel.innerHTML = (PROVINCES[provSel.value] || []).map((c) => `<option${c === 'قائم‌شهر' ? ' selected' : ''}>${c}</option>`).join('');
+  };
+  fillCities();
+  provSel.addEventListener('change', fillCities);
+  $('#us-city').innerHTML = MAZANDARAN_CITIES.map((c) => `<option>${c}</option>`).join('');
+  $('#us-date').innerHTML = weekKeys().map((k, i) => {
+    const j = jalaliLabel(k);
+    return `<option value="${k}">${i === 0 ? 'امروز' : weekdayFa(k)} ${j.short}</option>`;
+  }).join('');
+  $('#hero-city-label').textContent = 'قائم‌شهر، مازندران';
+}
+
+/* جستجوی هیرو */
+$('#hero-search-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const cat = $('#us-category').value;
+  const catMap = { all: 'booking', courts: 'booking', coach: 'coach', class: 'class', shop: 'shop', tournament: 'tournament' };
+  handleCatTile(catMap[cat] || 'booking');
+  if (cat === 'all' || cat === 'courts') {
+    const idx = $('#us-date').selectedIndex;
+    if (idx >= 0) { ui.dayOffset = idx; renderBookingView(); }
+  }
+});
+
+/* ---------- نوار شهرهای منطقه ---------- */
+function renderCityPills() {
+  $('#city-pills').innerHTML = REGIONAL_CITIES.map((c, i) =>
+    `<button type="button" class="city-pill ${i === 0 ? 'active' : i > 3 ? 'partner' : ''}" data-city="${c}">${c}</button>`
+  ).join('');
+  $$('#city-pills .city-pill').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.city === 'قائم‌شهر') { showView('booking'); return; }
+    toast('باشگاه در ' + b.dataset.city + ' به‌زودی افتتاح می‌شود؛ هم‌اکنون فقط شعبه قائم‌شهر فعال است.', 'error');
+  }));
+}
+
+/* ---------- قلب علاقه‌مندی ---------- */
+const heartSvg = (filled) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.6-7-9.6A4 4 0 0 1 12 7a4 4 0 0 1 7 3.4c0 5-7 9.6-7 9.6z" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8"/></svg>`;
+function toggleFav(kind, id) {
+  const f = state.favorites;
+  const arr = f[kind];
+  const i = arr.indexOf(id);
+  if (i >= 0) arr.splice(i, 1); else arr.push(id);
+  saveState();
+  renderFavBadge();
+  renderCityPills();
+  renderBookingView();
+  renderCoaches();
+  renderShopTeaser();
+  if (ui.view === 'shop') renderShop();
+  if (ui.view === 'favorites') renderFavorites();
+  if (ui.view === 'user' && ui.userTab === 'fav') renderUser();
+}
+function renderFavBadge() {
+  const f = state.favorites;
+  const n = f.courts.length + f.coaches.length + f.products.length;
+  $('#fav-badge').textContent = toFa(n);
+}
 
 /* ---------- نمای رزرو: زمین‌ها ---------- */
 function renderCourts() {
   $('#court-grid').innerHTML = COURTS.map((c) => `
-    <button type="button" class="court-card ${ui.court === c.id ? 'selected' : ''}" data-court="${c.id}">
-      <span class="court-badge">تعرفه پایه</span>
+    <div class="court-card ${ui.court === c.id ? 'selected' : ''}">
+      <button type="button" class="court-fav" data-cfav="${c.id}" aria-pressed="${state.favorites.courts.includes(c.id)}" aria-label="افزودن ${esc(c.short)} به علاقه‌مندی‌ها">${heartSvg(state.favorites.courts.includes(c.id))}</button>
+      <span class="court-rating">★ ${toFa(c.rating.toLocaleString('en-US'))}</span>
       <h4>${c.name}</h4>
       <p class="court-spec">${c.spec}</p>
       <p class="court-price">${money(state.settings.prices[c.id])} <small>/ ۹۰ دقیقه</small></p>
-    </button>`).join('');
-  $$('#court-grid .court-card').forEach((b) =>
-    b.addEventListener('click', () => { ui.court = +b.dataset.court; ui.cart = ui.cart.filter((s) => s.courtId === ui.court); renderBookingView(); }));
+      <button type="button" class="btn ${ui.court === c.id ? 'btn-accent' : 'btn-ghost'} btn-sm" data-pick-court="${c.id}">${ui.court === c.id ? 'زمین انتخاب شده' : 'مشاهده سانس‌ها'}</button>
+    </div>`).join('');
+  $$('[data-cfav]').forEach((b) => b.addEventListener('click', () => toggleFav('courts', +b.dataset.cfav)));
+  $$('[data-pick-court]').forEach((b) => b.addEventListener('click', () => {
+    ui.court = +b.dataset.pickCourt;
+    ui.cart = ui.cart.filter((s) => s.courtId === ui.court);
+    renderBookingView();
+    $('#slots-panel-anchor')?.scrollIntoView({ behavior: 'smooth' });
+  }));
 }
 
-/* ---------- نمای رزرو: تقویم ۷ روزه ---------- */
+/* تقویم ۷ روزه */
 function renderCalendar() {
   const today = dateKeyOf(new Date());
-  let html = '';
-  for (let i = 0; i < 7; i++) {
-    const key = addDays(today, i);
+  $('#calendar-strip').innerHTML = weekKeys().map((key, i) => {
     const j = jalaliLabel(key);
-    html += `
-      <button type="button" role="tab" class="day-chip ${i === ui.dayOffset ? 'selected' : ''}" data-day="${i}">
+    return `
+      <button type="button" role="tab" class="day-chip ${i === ui.dayOffset ? 'selected' : ''}" data-day="${i}" aria-selected="${i === ui.dayOffset}">
         <span class="dow">${i === 0 ? 'امروز — ' + weekdayFa(key) : weekdayFa(key)}</span>
-        <span class="dnum">${j.short}</span>
+        <span class="dnum num">${j.short}</span>
       </button>`;
-  }
-  $('#calendar-strip').innerHTML = html;
+  }).join('');
   $$('#calendar-strip .day-chip').forEach((b) =>
     b.addEventListener('click', () => { ui.dayOffset = +b.dataset.day; renderBookingView(); }));
 }
 
-/* ---------- نمای رزرو: سانس‌ها ---------- */
+/* سانس‌ها */
 function slotState(courtId, key, h) {
   if (state.bookings.some((b) => b.courtId === courtId && b.dateKey === key && b.slotHour === h && b.status === 'confirmed')) return 'booked';
   if (state.blocks.some((b) => b.courtId === courtId && b.dateKey === key && b.slotHour === h)) return 'blocked';
   const inCart = ui.cart.some((c) => c.courtId === courtId && c.dateKey === key && c.slotHour === h);
   return inCart ? 'selected' : 'free';
 }
-
 function renderSlots() {
   const key = addDays(dateKeyOf(new Date()), ui.dayOffset);
   const j = jalaliLabel(key);
   $('#slot-hint').textContent = `سانس‌های ${COURTS[ui.court].name} — ${weekdayFa(key)} ${j.full}`;
-  $('#slots-heading').textContent = '۳. انتخاب سانس';
   $('#slots-grid').innerHTML = SLOT_HOURS.map((h) => {
     const st = slotState(ui.court, key, h);
     const block = st === 'blocked' ? state.blocks.find((b) => b.courtId === ui.court && b.dateKey === key && b.slotHour === h) : null;
     const disabled = st === 'booked' || st === 'blocked';
-    const reason = block ? `<span class="slot-reason">${block.reason}</span>` : '';
+    const reason = block ? `<span class="slot-reason">${esc(block.reason)}</span>` : '';
     const statusText = st === 'booked' ? '<span class="slot-reason">رزرو شده</span>' : '';
-    const tag = isOffPeak(h) ? `<span class="slot-tag">تخفیف صبح</span>` : '';
+    const tag = isOffPeak(h) ? '<span class="slot-tag">تخفیف صبح</span>' : '';
     return `
-      <button type="button" class="slot ${st === 'booked' ? 'booked' : st === 'blocked' ? 'blocked' : st === 'selected' ? 'selected' : ''}"
+      <button type="button" class="slot ${h >= 19 ? 'evening' : ''} ${st === 'booked' ? 'booked' : st === 'blocked' ? 'blocked' : st === 'selected' ? 'selected' : ''}"
         data-h="${h}" ${disabled ? 'disabled' : ''} aria-pressed="${st === 'selected'}">
-        <span class="slot-time">${slotLabel(h)}</span>
+        <span class="slot-time num">${slotLabel(h)}</span>
         ${tag || ''}
         ${st === 'free' || st === 'selected' ? `<span class="slot-price">${money(slotPrice(ui.court, h))}</span>` : ''}
         ${reason}${statusText}
@@ -285,7 +450,6 @@ function renderSlots() {
     b.addEventListener('click', () => toggleCart(+b.dataset.h)));
   renderSummaryBar();
 }
-
 function toggleCart(h) {
   const key = addDays(dateKeyOf(new Date()), ui.dayOffset);
   const idx = ui.cart.findIndex((c) => c.courtId === ui.court && c.dateKey === key && c.slotHour === h);
@@ -296,26 +460,23 @@ function toggleCart(h) {
   }
   renderSlots();
 }
-
 function renderSummaryBar() {
   const bar = $('#summary-bar');
   if (!ui.cart.length) return bar.classList.add('hidden');
   const total = ui.cart.reduce((s, c) => s + slotPrice(c.courtId, c.slotHour), 0);
   $('#summary-count').textContent = toFa(ui.cart.length) + ' سانس انتخاب شده';
-  $('#summary-total').textContent = ' — جمع کل: ' + money(total);
+  $('#summary-total').textContent = 'جمع کل: ' + money(total);
   bar.classList.remove('hidden');
 }
-
 function renderBookingView() { renderCourts(); renderCalendar(); renderSlots(); }
 
-/* ---------- مودال ثبت نهایی و بلیت ---------- */
-let lastGroup = null; // {codes, bookings} پس از پرداخت
-
+/* ---------- پرداخت و بلیت دیجیتال ---------- */
+let lastGroup = null;
 $('#open-checkout').addEventListener('click', () => {
   const slots = ui.cart;
   const slotsTotal = slots.reduce((s, c) => s + slotPrice(c.courtId, c.slotHour), 0);
   $('#checkout-body').innerHTML = `
-    <h3 id="checkout-title">ثبت نهایی رزرو</h3>
+    <h3>ثبت نهایی رزرو</h3>
     <div class="summary-box">
       ${slots.map((c) => {
         const j = jalaliLabel(c.dateKey);
@@ -325,19 +486,18 @@ $('#open-checkout').addEventListener('click', () => {
     </div>
     <form id="checkout-form" class="form-grid">
       <label>نام و نام خانوادگی
-        <input type="text" id="cust-name" class="input" value="${SAMPLE_USER.name}" required />
+        <input type="text" id="cust-name" class="input" value="${esc(state.session.role === 'player' ? SAMPLE_USER.name : '')}" required />
       </label>
       <label>شماره موبایل
-        <input type="tel" id="cust-phone" class="input" pattern="09[0-9]{9}" value="${SAMPLE_USER.phone}" required />
+        <input type="tel" id="cust-phone" class="input" pattern="09[0-9]{9}" value="${esc(state.session.role === 'player' ? SAMPLE_USER.phone : '')}" required />
       </label>
-      <label class="check-row">
+      <label class="check-row span-2">
         <input type="checkbox" id="cust-racket" />
         <span>اجاره ست راکت و توپ (+${money(RACKET_FEE)})</span>
       </label>
-      <button class="btn btn-accent" type="submit" id="pay-btn">پرداخت موفق دمو</button>
+      <button class="btn btn-accent" type="submit" id="pay-btn">پرداخت و صدور بلیت</button>
     </form>`;
   $('#checkout-modal').classList.remove('hidden');
-
   $('#checkout-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const name = $('#cust-name').value.trim();
@@ -353,23 +513,23 @@ $('#open-checkout').addEventListener('click', () => {
 
 function finalizeBooking(name, phone, racket, slotsTotal) {
   const groupCode = String(Math.floor(100000 + Math.random() * 900000));
+  const planDiscount = (state.activePlan && state.activePlan.phone === phone) ? state.activePlan.discount : 0;
   const newBookings = ui.cart.map((c) => ({
     id: uid(), code: groupCode, courtId: c.courtId, dateKey: c.dateKey, slotHour: c.slotHour,
     name, phone, racket, status: 'confirmed', source: 'آنلاین',
-    amount: slotPrice(c.courtId, c.slotHour), createdAt: Date.now(),
+    amount: Math.round(slotPrice(c.courtId, c.slotHour) * (1 - planDiscount / 100)), createdAt: Date.now(),
   }));
   state.bookings.push(...newBookings);
+  if (state.session.role === 'guest' && phone === SAMPLE_USER.phone) state.session = { role: 'player' };
   saveState();
+  renderSessionBar();
   lastGroup = { code: groupCode, slots: [...ui.cart], name, phone, racket, slotsTotal };
   ui.cart = [];
   renderBookingView();
   renderTicket(groupCode);
   toast('رزرو شما با موفقیت ثبت شد');
 }
-
 function ticketHtml(code) {
-  const g = lastGroup && lastGroup.code === code ? lastGroup
-    : { slots: state.bookings.filter((b) => b.code === code && b.status === 'confirmed'), name: null, phone: null, racket: null, slotsTotal: null };
   const list = state.bookings.filter((b) => b.code === code && b.status === 'confirmed');
   if (!list.length) return '<p class="muted">این رزرو لغو شده است.</p>';
   const b0 = list[0];
@@ -378,13 +538,13 @@ function ticketHtml(code) {
   return `
     <div class="ticket">
       <p class="muted">بلیت دیجیتال رزرو</p>
-      <div class="ticket-code">${toFa(b0.code)}</div>
-      <p class="muted">کد رهگیری</p>
+      <div class="ticket-code num">${toFa(b0.code)}</div>
+      <p class="muted">کد رهگیری — در ورود باشگاه اسکن کنید</p>
       <div class="qr">${qrSvg(b0.code)}</div>
       <p class="ticket-meta">${COURTS[b0.courtId].name}<br/>
-        ${weekdayFa(b0.dateKey)} — ${j.full}<br/>
+        ${weekdayFa(b0.dateKey)}، ${j.full}<br/>
         ${list.map((b) => slotLabel(b.slotHour)).join(' و ')}<br/>
-        ${b0.name} — ${toFa(b0.phone)}<br/>
+        ${esc(b0.name)} — ${toFa(b0.phone)}<br/>
         ${list.some((b) => b.racket) ? 'اجاره ست راکت و توپ: ' + money(RACKET_FEE) + '<br/>' : ''}
         مبلغ پرداختی: <strong>${money(list.reduce((s, b) => s + b.amount, 0) + racketFee)}</strong>
       </p>
@@ -394,130 +554,486 @@ function ticketHtml(code) {
       <button class="btn btn-ghost" type="button" data-close2>بستن</button>
     </div>`;
 }
-
 function renderTicket(code) {
   $('#checkout-body').innerHTML = ticketHtml(code);
   $$('[data-close2]', $('#checkout-body')).forEach((b) =>
     b.addEventListener('click', () => {
       $('#checkout-modal').classList.add('hidden');
-      if (b.textContent.includes('پنل')) switchRole('user');
+      if (b.textContent.includes('پنل')) showView('user');
     }));
 }
 
-/* ---------- پنل مشتری ---------- */
-function userBookings() {
-  return state.bookings.filter((b) => b.phone === SAMPLE_USER.phone);
+/* ---------- مربیان ---------- */
+function renderCoaches() {
+  $('#coach-grid').innerHTML = COACHES.map((c) => {
+    const fav = state.favorites.coaches.includes(c.id);
+    return `
+      <div class="coach-card">
+        <button type="button" class="coach-fav" data-cfav2="${c.id}" aria-pressed="${fav}" aria-label="افزودن ${esc(c.name)} به علاقه‌مندی‌ها">${heartSvg(fav)}</button>
+        <div class="coach-avatar" aria-hidden="true">${c.init}</div>
+        <h4>${c.name}</h4>
+        <p class="coach-cred">${c.cred}</p>
+        <p class="muted">${c.rate}</p>
+        <button type="button" class="btn btn-ghost btn-sm" data-coach="${c.id}">رزرو کلاس با مربی</button>
+      </div>`;
+  }).join('');
+  $$('[data-cfav2]').forEach((b) => b.addEventListener('click', () => toggleFav('coaches', b.dataset.cfav2)));
+  $$('[data-coach]').forEach((b) => b.addEventListener('click', () => openCoachModal(b.dataset.coach)));
 }
+function openCoachModal(id) {
+  const c = COACHES.find((x) => x.id === id);
+  $('#coach-modal-body').innerHTML = `
+    <h3>رزرو کلاس با ${c.name}</h3>
+    <p class="muted">${c.cred}</p>
+    <form class="form-grid" id="coach-class-form">
+      <label>نام شما<input type="text" id="cc-name" class="input" value="${esc(state.session.role === 'player' ? SAMPLE_USER.name : '')}" required /></label>
+      <label>موبایل<input type="tel" id="cc-phone" class="input" pattern="09[0-9]{9}" value="${esc(state.session.role === 'player' ? SAMPLE_USER.phone : '')}" required /></label>
+      <label>روز ترجیحی<select id="cc-day">${weekKeys().map((k, i) => `<option value="${k}">${i === 0 ? 'امروز' : weekdayFa(k)} ${jalaliLabel(k).short}</option>`).join('')}</select></label>
+      <label>سطح شما<select id="cc-level"><option>مبتدی</option><option>متوسط</option><option>پیشرفته</option></select></label>
+      <button class="btn btn-accent span-2" type="submit">ثبت درخواست کلاس (${c.rate})</button>
+    </form>`;
+  $('#coach-modal').classList.remove('hidden');
+  $('#coach-class-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = $('#cc-name').value.trim(), phone = toEn($('#cc-phone').value.trim());
+    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
+    state.messages.push({ id: uid(), name, phone, subject: 'هماهنگی کلاس', body: `درخواست کلاس با مربی ${c.name}، روز ${$('#cc-day').selectedOptions[0].textContent}، سطح ${$('#cc-level').value}`, createdAt: Date.now() });
+    saveState();
+    $('#coach-modal').classList.add('hidden');
+    toast('درخواست کلاس ثبت شد؛ مربی باشگاه تماس می‌گیرد');
+  });
+}
+
+/* ---------- کلاس‌ها و تورنمنت ---------- */
+function renderEvents() {
+  $('#event-grid').innerHTML = EVENTS.map((e) => `
+    <div class="event-card ${e.featured ? 'featured' : ''}">
+      <span class="event-kind">${e.kind}</span>
+      <h4>${e.title}</h4>
+      <p class="event-meta">${e.meta}</p>
+      <button type="button" class="btn ${e.featured ? 'btn-accent' : 'btn-ghost'} btn-sm" data-event="${e.id}">ثبت‌نام</button>
+    </div>`).join('');
+  $$('[data-event]').forEach((b) => b.addEventListener('click', () => openEventModal(b.dataset.event)));
+}
+function openEventModal(id) {
+  const e = EVENTS.find((x) => x.id === id);
+  $('#event-modal-body').innerHTML = `
+    <h3>ثبت‌نام: ${e.title}</h3>
+    <p class="muted">${e.meta}</p>
+    <form class="form-grid" id="event-reg-form">
+      <label>نام و نام خانوادگی<input type="text" id="ev-name" class="input" required /></label>
+      <label>موبایل<input type="tel" id="ev-phone" class="input" pattern="09[0-9]{9}" required /></label>
+      <label class="span-2">نام هم‌تیمی (در صورت بازی دوبل)<input type="text" id="ev-mate" class="input" /></label>
+      <button class="btn btn-accent span-2" type="submit">ثبت‌نام در ${e.kind}</button>
+    </form>`;
+  $('#event-modal').classList.remove('hidden');
+  $('#event-reg-form').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const name = $('#ev-name').value.trim(), phone = toEn($('#ev-phone').value.trim());
+    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
+    state.messages.push({ id: uid(), name, phone, subject: 'درخواست تورنمنت', body: `ثبت‌نام «${e.title}»${$('#ev-mate').value.trim() ? ' با هم‌تیمی: ' + $('#ev-mate').value.trim() : ''}`, createdAt: Date.now() });
+    saveState();
+    $('#event-modal').classList.add('hidden');
+    toast('ثبت‌نام شما دریافت شد');
+  });
+}
+
+/* ---------- فروشگاه ---------- */
+const productArt = (p) => {
+  if (p.cat === 'راکت') return '<svg viewBox="0 0 48 48"><ellipse cx="21" cy="17" rx="11" ry="16" transform="rotate(28 21 17)" fill="none" stroke="#F4C860" stroke-width="2.4"/><path d="M28 30 39 42" stroke="#34D399" stroke-width="3" stroke-linecap="round"/></svg>';
+  if (p.cat === 'توپ') return '<svg viewBox="0 0 48 48"><circle cx="18" cy="28" r="9" fill="none" stroke="#F4C860" stroke-width="2.4"/><circle cx="31" cy="20" r="9" fill="none" stroke="#34D399" stroke-width="2.4"/><circle cx="27" cy="32" r="9" fill="none" stroke="#9FB6CB" stroke-width="2"/></svg>';
+  if (p.cat === 'کفش') return '<svg viewBox="0 0 48 48"><path d="M8 32c0-4 4-6 8-6l8-8 4 6 8 4c4 2 4 6 0 6H10z" fill="none" stroke="#F4C860" stroke-width="2.2"/></svg>';
+  return '<svg viewBox="0 0 48 48"><path d="M10 18h28l-2 20H12z" fill="none" stroke="#F4C860" stroke-width="2.4"/><path d="M18 18v-4a6 6 0 0 1 12 0v4" fill="none" stroke="#34D399" stroke-width="2.4"/></svg>';
+};
+function productCardHtml(p) {
+  const fav = state.favorites.products.includes(p.id);
+  return `
+    <div class="product-card">
+      <button type="button" class="product-fav" data-pfav="${p.id}" aria-pressed="${fav}" aria-label="افزودن ${esc(p.name)} به علاقه‌مندی‌ها">${heartSvg(fav)}</button>
+      <div class="product-art" aria-hidden="true">${productArt(p)}</div>
+      <h4>${p.name}</h4>
+      <p class="product-cat">${p.cat} — ${p.desc}</p>
+      <p class="product-price num">${money(p.price)}</p>
+      <div class="product-actions">
+        <button type="button" class="btn btn-accent btn-sm" data-order="${p.id}">افزودن به سبد</button>
+      </div>
+    </div>`;
+}
+function renderShopTeaser() {
+  $('#shop-teaser-grid').innerHTML = PRODUCTS.map(productCardHtml).join('');
+  bindProductButtons($('#shop-teaser-grid'));
+}
+function renderShop() {
+  const cats = ['همه', ...new Set(PRODUCTS.map((p) => p.cat))];
+  $('#shop-filter').innerHTML = cats.map((c) =>
+    `<button type="button" class="${ui.shopCat === c ? 'active' : ''}" data-shopcat="${c}">${c}</button>`).join('');
+  $$('#shop-filter button').forEach((b) => b.addEventListener('click', () => { ui.shopCat = b.dataset.shopcat; renderShop(); }));
+  const list = ui.shopCat === 'همه' ? PRODUCTS : PRODUCTS.filter((p) => p.cat === ui.shopCat);
+  $('#shop-grid').innerHTML = list.length ? list.map(productCardHtml).join('')
+    : '<p class="muted">کالایی در این دسته نیست.</p>';
+  bindProductButtons($('#shop-grid'));
+}
+function bindProductButtons(root) {
+  $$('[data-pfav]', root).forEach((b) => b.addEventListener('click', () => toggleFav('products', b.dataset.pfav)));
+  $$('[data-order]', root).forEach((b) => b.addEventListener('click', () => openOrderModal(b.dataset.order)));
+}
+function openOrderModal(id) {
+  const p = PRODUCTS.find((x) => x.id === id);
+  $('#checkout-body').innerHTML = `
+    <h3>سفارش: ${p.name}</h3>
+    <div class="summary-box"><div class="row"><span>${p.desc}</span><span class="num">${money(p.price)}</span></div></div>
+    <form class="form-grid" id="order-form">
+      <label>نام شما<input type="text" id="or-name" class="input" required /></label>
+      <label>موبایل<input type="tel" id="or-phone" class="input" pattern="09[0-9]{9}" required /></label>
+      <label class="span-2">توضیح (سایز، رنگ یا زمان تحویل حضوری)<input type="text" id="or-note" class="input" /></label>
+      <button class="btn btn-accent span-2" type="submit">ثبت سفارش</button>
+    </form>`;
+  $('#checkout-modal').classList.remove('hidden');
+  $('#order-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = $('#or-name').value.trim(), phone = toEn($('#or-phone').value.trim());
+    if (!name || !/^09\d{9}$/.test(phone)) return toast('نام و شماره موبایل معتبر وارد کنید', 'error');
+    state.orders.push({ id: uid(), productId: p.id, name, phone, note: $('#or-note').value.trim(), price: p.price, createdAt: Date.now() });
+    saveState();
+    $('#checkout-modal').classList.add('hidden');
+    toast('سفارش شما ثبت شد؛ برای هماهنگی تحویل تماس می‌گیریم');
+  });
+}
+
+/* ---------- مقالات ---------- */
+function articleCardHtml(a) {
+  return `
+    <button type="button" class="article-card" data-article="${a.id}">
+      <span class="article-tag">${a.tag}</span>
+      <h4>${a.title}</h4>
+      <p class="article-excerpt">${a.excerpt}</p>
+      <span class="article-meta">مطالعه حدود ${toFa(a.body.length * 2)} دقیقه</span>
+    </button>`;
+}
+function renderBlogTeaser() { $('#blog-teaser-grid').innerHTML = ARTICLES.map(articleCardHtml).join(''); bindArticles($('#blog-teaser-grid')); }
+function renderBlog() { $('#blog-grid').innerHTML = ARTICLES.map(articleCardHtml).join(''); bindArticles($('#blog-grid')); }
+function bindArticles(root) {
+  $$('[data-article]', root).forEach((b) => b.addEventListener('click', () => {
+    const a = ARTICLES.find((x) => x.id === b.dataset.article);
+    $('#article-modal-body').innerHTML = `
+      <div class="reader-head">
+        <span class="article-tag">${a.tag}</span>
+        <h3>${a.title}</h3>
+        <p class="muted">${a.excerpt}</p>
+      </div>
+      <div class="article-body">${a.body.map((p) => `<p>${p}</p>`).join('')}</div>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" data-close2>بستن</button></div>`;
+    $('#article-modal').classList.remove('hidden');
+    $$('[data-close2]', $('#article-modal-body')).forEach((x) =>
+      x.addEventListener('click', () => $('#article-modal').classList.add('hidden')));
+  }));
+}
+
+/* ---------- پلن‌ها ---------- */
+function renderPlans() {
+  $('#plan-grid').innerHTML = PLANS.map((p) => {
+    const active = state.activePlan && state.activePlan.planId === p.id;
+    return `
+      <div class="plan-card ${p.id === 'gold' ? 'gold' : ''}">
+        <h3>${p.name}</h3>
+        <p class="plan-price num">${money(p.price)} <span class="muted" style="font-size:.8rem;font-weight:400">/ ماه</span></p>
+        <ul class="plan-feats">${p.feats.map((f) => `<li>${f}</li>`).join('')}</ul>
+        ${active
+          ? '<span class="plan-active-pill">✓ این پلن فعال شماست</span>'
+          : `<button type="button" class="btn ${p.id === 'gold' ? 'btn-accent' : 'btn-ghost'}" data-plan="${p.id}">فعال‌سازی ${p.name}</button>`}
+      </div>`;
+  }).join('');
+  $$('[data-plan]').forEach((b) => b.addEventListener('click', async () => {
+    if (state.session.role === 'guest') {
+      toast('برای فعال‌سازی پلن، ابتدا وارد حساب بازیکن شوید', 'error');
+      showView('auth');
+      return;
+    }
+    const p = PLANS.find((x) => x.id === b.dataset.plan);
+    const ok = await confirmBox('فعال‌سازی ' + p.name, 'پلن بلافاصله در حساب بازیکن ثبت می‌شود و تخفیف آن روی رزروهای بعدی اعمال می‌شود. مبلغ: ' + money(p.price), 'فعال‌سازی');
+    if (!ok) return;
+    state.activePlan = { planId: p.id, phone: SAMPLE_USER.phone, name: p.name, discount: p.id === 'bronze' ? 0 : 10, sessions: PLANS.find((x) => x.id === p.id).feats[0] };
+    saveState();
+    renderPlans();
+    toast(p.name + ' فعال شد؛ تخفیف پلن روی رزروهای بعدی اعمال می‌شود');
+  }));
+  $('#active-plan-card').innerHTML = state.activePlan
+    ? `<h3>پلن فعال شما: ${state.activePlan.name}</h3>
+       <p class="muted">تخفیف ${toFa(state.activePlan.discount)}٪ روی همه رزروهای آنلاین با موبایل ${toFa(state.activePlan.phone)} اعمال می‌شود.</p>`
+    : '<h3>پلن فعالی ندارید</h3><p class="muted">با فعال‌سازی یکی از پلن‌های بالا، تخفیف به‌صورت خودکار روی رزروهای بعدی اعمال می‌شود.</p>';
+}
+
+/* ---------- علاقه‌مندی‌ها ---------- */
+function renderFavorites() {
+  const f = state.favorites;
+  const fc = f.courts.map((i) => COURTS[i]).filter(Boolean);
+  const cc = COACHES.filter((c) => f.coaches.includes(c.id));
+  const pc = PRODUCTS.filter((p) => f.products.includes(p.id));
+  if (!fc.length && !cc.length && !pc.length) {
+    $('#favorites-content').innerHTML = `
+      <div class="fav-empty">
+        <h3>هنوز چیزی به علاقه‌مندی‌ها اضافه نکرده‌اید</h3>
+        <p>روی قلبِ هر زمین، مربی یا کالا بزنید تا اینجا ذخیره شود.</p>
+        <button type="button" class="btn btn-accent" data-nav="booking">مشاهده زمین‌ها</button>
+      </div>`;
+    return;
+  }
+  $('#favorites-content').innerHTML = `
+    ${fc.length ? `<div class="fav-group"><h3>زمین‌ها</h3><div class="court-grid">${fc.map((c) => `
+      <div class="court-card"><h4>${c.name}</h4><p class="court-spec">${c.spec}</p>
+      <p class="court-price">${money(state.settings.prices[c.id])} <small>/ ۹۰ دقیقه</small></p>
+      <button type="button" class="btn btn-ghost btn-sm" data-nav="booking">مشاهده سانس‌ها</button></div>`).join('')}</div></div>` : ''}
+    ${cc.length ? `<div class="fav-group"><h3>مربیان</h3><div class="coach-grid">${cc.map((c) => `
+      <div class="coach-card"><div class="coach-avatar">${c.init}</div><h4>${c.name}</h4>
+      <p class="coach-cred">${c.cred}</p></div>`).join('')}</div></div>` : ''}
+    ${pc.length ? `<div class="fav-group"><h3>کالاها</h3><div class="product-grid">${pc.map(productCardHtml).join('')}</div></div>` : ''}`;
+  bindProductButtons($('#favorites-content'));
+}
+
+/* ---------- نقشه ---------- */
+function renderMap() {
+  $('#map-svg').innerHTML = `
+  <svg viewBox="0 0 600 400" role="img" aria-label="نقشه شماتیک قائم‌شهر و موقعیت باشگاه">
+    <rect width="600" height="400" fill="#0E2440"/>
+    <path d="M0 300 L600 220" stroke="#1B3A5A" stroke-width="26" fill="none"/>
+    <path d="M120 0 L180 400" stroke="#1B3A5A" stroke-width="20" fill="none"/>
+    <path d="M380 0 L340 400" stroke="#1B3A5A" stroke-width="14" fill="none"/>
+    <text x="30" y="270" fill="#9FB6CB" font-size="13">بلوار قائم‌آباد</text>
+    <text x="60" y="40" fill="#9FB6CB" font-size="12">خیابان گلستان</text>
+    <rect x="200" y="80" width="60" height="40" fill="#143354"/><text x="206" y="106" fill="#9FB6CB" font-size="11">پارک</text>
+    <rect x="430" y="300" width="90" height="50" fill="#143354"/><text x="438" y="330" fill="#9FB6CB" font-size="11">میدان اصلی</text>
+    <g>
+      <rect x="300" y="150" width="120" height="80" rx="10" fill="rgba(52,211,153,.14)" stroke="#34D399" stroke-width="2.4"/>
+      <text x="330" y="185" fill="#34D399" font-size="14" font-weight="700">باشگاه پدل</text>
+      <text x="336" y="205" fill="#EEF4F9" font-size="11">قائم‌شهر</text>
+      <circle cx="420" cy="150" r="6" fill="#F4C860"/>
+    </g>
+    <path d="M470 325 L400 240 L366 200" stroke="#F4C860" stroke-width="2.4" fill="none" stroke-dasharray="6 6" marker-end="none"/>
+    <text x="440" y="245" fill="#F4C860" font-size="11">مسیر ۸ دقیقه‌ای از میدان</text>
+  </svg>`;
+  $('#court-layout-svg').innerHTML = `
+  <svg viewBox="0 0 300 220" role="img" aria-label="چیدمان سه زمین باشگاه">
+    <rect x="20" y="20" width="120" height="80" rx="6" fill="none" stroke="#34D399" stroke-width="2"/><text x="34" y="64" fill="#EEF4F9" font-size="11">زمین ۱ — پانوراما</text>
+    <rect x="160" y="20" width="120" height="80" rx="6" fill="none" stroke="#34D399" stroke-width="2"/><text x="176" y="64" fill="#EEF4F9" font-size="11">زمین ۲ — سرپوشیده</text>
+    <rect x="90" y="120" width="120" height="80" rx="6" fill="none" stroke="#F4C860" stroke-width="2.4"/><text x="106" y="156" fill="#EEF4F9" font-size="11">زمین ۳ — VIP مرکزی</text>
+    <text x="112" y="176" fill="#9FB6CB" font-size="10">جایگاه تماشاگر</text>
+  </svg>`;
+  $('#map-addr').textContent = CLUB.addr;
+  $('#map-phone').textContent = 'تلفن پذیرش: ' + CLUB.phone;
+}
+
+/* ---------- تماس با ما ---------- */
+function renderContactInfo() {
+  $('#contact-addr').textContent = CLUB.addr;
+  $('#contact-phone').textContent = 'تلفن پذیرش: ' + CLUB.phone;
+}
+$('#contact-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('#cf-name').value.trim(), phone = toEn($('#cf-phone').value.trim());
+  const subject = $('#cf-subject').value, body = $('#cf-body').value.trim();
+  if (!name || !/^09\d{9}$/.test(phone) || !body) return toast('نام، موبایل معتبر و متن پیام را کامل وارد کنید', 'error');
+  state.messages.push({ id: uid(), name, phone, subject, body, createdAt: Date.now() });
+  saveState();
+  $('#contact-form').reset();
+  toast('پیام شما ثبت شد؛ پاسخ از طرف پذیرش باشگاه ارسال می‌شود');
+});
+
+/* ---------- احراز هویت ---------- */
+$$('.auth-tab').forEach((t) => t.addEventListener('click', () => {
+  $$('.auth-tab').forEach((x) => x.classList.toggle('active', x === t));
+  $('#auth-player-pane').classList.toggle('hidden', t.dataset.authtab !== 'player');
+  $('#auth-admin-pane').classList.toggle('hidden', t.dataset.authtab !== 'admin');
+}));
+let demoOtp = null;
+$('#otp-send').addEventListener('click', () => {
+  const p = toEn($('#otp-phone').value.trim());
+  if (!/^09\d{9}$/.test(p)) return toast('شماره موبایل معتبر وارد کنید', 'error');
+  demoOtp = '1234';
+  toast('کد دمو ارسال شد: ۱۲۳۴');
+});
+$('#otp-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const p = toEn($('#otp-phone').value.trim());
+  if (!/^09\d{9}$/.test(p)) return toast('شماره موبایل معتبر وارد کنید', 'error');
+  if (toEn($('#otp-code').value.trim()) !== (demoOtp || '')) return toast('کد یک‌بارمصرف را با «ارسال کد دمو» بگیرید', 'error');
+  loginAs('player');
+});
+$('#admin-login-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = $('#admin-user').value.trim(), p = $('#admin-pass').value;
+  if (u === ADMIN_CRED.user && p === ADMIN_CRED.pass) loginAs('admin');
+  else toast('نام کاربری یا گذرواژه نادرست است (دمو: admin / admin123)', 'error');
+});
+$('#demo-player-login').addEventListener('click', () => loginAs('player'));
+$('#demo-admin-login').addEventListener('click', () => loginAs('admin'));
+function loginAs(role) {
+  state.session = { role };
+  saveState();
+  renderSessionBar();
+  showView(role === 'admin' ? 'admin' : 'user');
+  toast(role === 'admin' ? 'به پنل مدیریت خوش آمدید' : 'به حساب بازیکن وارد شدید');
+}
+
+/* ---------- پنل بازیکن ---------- */
+function userBookings() { return state.bookings.filter((b) => b.phone === SAMPLE_USER.phone); }
 function isUpcoming(b) {
   const today = dateKeyOf(new Date());
   return b.dateKey > today || (b.dateKey === today && b.slotHour + 1.5 > new Date().getHours() + new Date().getMinutes() / 60);
 }
+function hoursUntil(b) {
+  const [y, m, d] = b.dateKey.split('-').map(Number);
+  return (new Date(y, m - 1, d, Math.floor(b.slotHour), b.slotHour % 1 ? 30 : 0) - new Date()) / 3600000;
+}
+function cancelBooking(id, by) {
+  const b = state.bookings.find((x) => x.id === id);
+  if (!b) return;
+  const free = hoursUntil(b) >= CANCEL_FREE_HOURS;
+  if (by === 'player' && !free) return toast('لغو رایگان فقط تا ۶ ساعت قبل از شروع سانس ممکن است', 'error');
+  b.status = 'cancelled';
+  saveState();
+  renderBookingView();
+  if (state.session.role === 'player') renderUser();
+  if (state.session.role === 'admin') renderAdmin();
+  toast('رزرو لغو شد و سانس آزاد شد');
+}
+function bookingItemHtml(b, role) {
+  const j = jalaliLabel(b.dateKey);
+  const free = hoursUntil(b) >= CANCEL_FREE_HOURS;
+  return `
+    <div class="booking-item ${b.status === 'cancelled' ? 'cancelled' : ''}">
+      <div class="bi-main">
+        <strong>${COURTS[b.courtId].name}</strong>
+        <p class="bi-meta num">${weekdayFa(b.dateKey)} ${j.full} — ${slotLabel(b.slotHour)} — ${money(b.amount)}</p>
+        <p class="bi-code num">کد رهگیری: ${toFa(b.code)}</p>
+      </div>
+      <span class="status-pill ${b.status === 'confirmed' ? 'ok' : 'cancelled'}">${b.status === 'confirmed' ? 'قطعی' : 'لغو شده'}</span>
+      <div class="bi-actions">
+        ${b.status === 'confirmed' ? `<button type="button" class="btn btn-ghost btn-sm" data-ticket="${b.code}">بلیت دیجیتال</button>` : ''}
+        ${b.status === 'confirmed' && role === 'player' ? (free
+          ? `<button type="button" class="btn btn-outline-danger btn-sm" data-cancel="${b.id}">لغو رایگان</button>`
+          : '<span class="muted">لغو رایگان: تا ۶ ساعت قبل</span>') : ''}
+        ${b.status === 'confirmed' && role === 'admin' ? `<button type="button" class="btn btn-outline-danger btn-sm" data-cancel="${b.id}">لغو توسط مدیر</button>` : ''}
+      </div>
+    </div>`;
+}
+function bindBookingItems(root, role) {
+  $$('[data-cancel]', root).forEach((b) => b.addEventListener('click', () => cancelBooking(b.dataset.cancel, role)));
+  $$('[data-ticket]', root).forEach((b) => b.addEventListener('click', () => {
+    $('#checkout-body').innerHTML = ticketHtml(b.dataset.ticket);
+    $$('[data-close2]', $('#checkout-body')).forEach((x) =>
+      x.addEventListener('click', () => $('#checkout-modal').classList.add('hidden')));
+    $('#checkout-modal').classList.remove('hidden');
+  }));
+}
 
 function renderUser() {
-  $('#profile-name').textContent = SAMPLE_USER.name;
-  $('#profile-phone').textContent = toFa(SAMPLE_USER.phone);
-  $('#profile-points').textContent = toFa(SAMPLE_USER.points);
+  $('#user-greeting').textContent = SAMPLE_USER.name + ' عزیز، خوش برگشتی. امتیاز فعلی: ' + toFa(SAMPLE_USER.points);
   $$('.tab[data-usertab]').forEach((t) => t.classList.toggle('active', t.dataset.usertab === ui.userTab));
-
+  const main = $('#user-panel-main');
   const all = userBookings().sort((a, b) => (a.dateKey + a.slotHour).localeCompare(b.dateKey + b.slotHour));
   const upcoming = all.filter((b) => isUpcoming(b) && b.status === 'confirmed');
   const history = all.filter((b) => !isUpcoming(b) || b.status === 'cancelled');
-  const list = ui.userTab === 'upcoming' ? upcoming : history;
 
-  $('#user-bookings').innerHTML = list.length ? list.map((b) => {
-    const j = jalaliLabel(b.dateKey);
-    const free = hoursUntil(b) >= CANCEL_FREE_HOURS;
-    return `
-      <div class="booking-item ${b.status === 'cancelled' ? 'cancelled' : ''}">
-        <div class="bi-main">
-          <strong>${COURTS[b.courtId].name}</strong>
-          <p class="bi-meta">${weekdayFa(b.dateKey)} ${j.full} — ${slotLabel(b.slotHour)} — ${money(b.amount)}</p>
-          <p class="bi-code">کد رهگیری: ${toFa(b.code)}</p>
-        </div>
-        <span class="status-pill ${b.status === 'confirmed' ? 'ok' : 'cancelled'}">${b.status === 'confirmed' ? 'قطعی' : 'لغو شده'}</span>
-        <div class="bi-actions">
-          ${b.status === 'confirmed' ? `<button type="button" class="btn btn-ghost btn-sm" data-ticket="${b.code}">مشاهده بلیت</button>` : ''}
-          ${b.status === 'confirmed' && isUpcoming(b) ? `<button type="button" class="btn btn-outline-danger" data-cancel="${b.id}">لغو رزرو</button>` : ''}
-        </div>
-        ${b.status === 'confirmed' && isUpcoming(b) ? `<p class="muted" style="width:100%">${free ? 'لغو این رزرو رایگان است.' : 'لغو تا ۶ ساعت قبل از سانس رایگان است — اکنون کمتر از ۶ ساعت مانده.'}</p>` : ''}
-      </div>`;
-  }).join('') : `<div class="empty-state">رزروی در این فهرست نیست — از بخش «رزرو آنلاین» یک سانس انتخاب کنید.</div>`;
-
-  $$('[data-ticket]').forEach((b) => b.addEventListener('click', () => {
-    $('#checkout-body').innerHTML = ticketHtml(b.dataset.ticket);
-    $$('[data-close2]', $('#checkout-body')).forEach((x) => x.addEventListener('click', () => $('#checkout-modal').classList.add('hidden')));
-    $('#checkout-modal').classList.remove('hidden');
-  }));
-  $$('[data-cancel]').forEach((b) => b.addEventListener('click', () => cancelBooking(b.dataset.cancel, 'user')));
+  if (ui.userTab === 'overview') {
+    main.innerHTML = `
+      <div class="kpi-grid">
+        <div class="kpi"><p class="kpi-label">رزروهای پیش‌رو</p><p class="kpi-value green">${toFa(upcoming.length)}</p></div>
+        <div class="kpi"><p class="kpi-label">امتیاز باشگاه</p><p class="kpi-value gold">${toFa(SAMPLE_USER.points)}</p></div>
+        <div class="kpi"><p class="kpi-label">بازی‌های ثبت‌شده</p><p class="kpi-value">${toFa(all.length)}</p></div>
+        <div class="kpi"><p class="kpi-label">پلن عضویت</p><p class="kpi-value" style="font-size:1.1rem">${state.activePlan ? state.activePlan.name : 'بدون پلن'}</p></div>
+      </div>
+      <div class="panel-card"><h3>بلیت نزدیک‌ترین بازی</h3>${upcoming.length ? ticketHtml(upcoming[0].code) : '<p class="muted">بازی پیش‌رویی ندارید؛ از بخش رزرو سریع شروع کنید.</p>'}</div>`;
+    bindBookingItems(main, 'player');
+    $$('[data-close2]', main).forEach((x) => x.addEventListener('click', () => showView('booking')));
+    return;
+  }
+  if (ui.userTab === 'upcoming' || ui.userTab === 'history') {
+    const list = ui.userTab === 'upcoming' ? upcoming : history;
+    main.innerHTML = `
+      <h3>${ui.userTab === 'upcoming' ? 'رزروهای پیش‌رو' : 'تاریخچه بازی‌ها'}</h3>
+      ${list.length ? list.map((b) => bookingItemHtml(b, 'player')).join('')
+        : `<div class="fav-empty"><p>${ui.userTab === 'upcoming' ? 'رزرو پیش‌رویی ندارید.' : 'تاریخچه‌ای ثبت نشده.'}</p><button type="button" class="btn btn-accent" data-nav="booking">رزرو سانس جدید</button></div>`}`;
+    bindBookingItems(main, 'player');
+    return;
+  }
+  if (ui.userTab === 'plan') {
+    main.innerHTML = `
+      <h3>پلن عضویت فعال</h3>
+      ${state.activePlan ? `
+        <div class="panel-card">
+          <h4>${state.activePlan.name}</h4>
+          <p class="muted">تخفیف ${toFa(state.activePlan.discount)}٪ روی رزروهای آنلاین با موبایل ${toFa(state.activePlan.phone)}</p>
+          <p class="plan-active-pill">✓ فعال</p>
+        </div>` : `
+        <div class="fav-empty">
+          <p>پلن فعالی ندارید. با یک پلن ماهانه، هر سانس ارزان‌تر تمام می‌شود.</p>
+          <button type="button" class="btn btn-accent" data-nav="plans">مشاهده پلن‌ها</button>
+        </div>`}`;
+    return;
+  }
+  if (ui.userTab === 'fav') {
+    main.innerHTML = '<h3>علاقه‌مندی‌ها</h3>' + '<div id="user-fav-inner"></div>';
+    const f = state.favorites;
+    $('#user-fav-inner').innerHTML = `
+      ${f.courts.length ? '<div class="fav-group"><h4>زمین‌ها</h4><div class="court-grid">' + f.courts.map((i) => `<div class="court-card"><h4>${COURTS[i].name}</h4><p class="court-price num">${money(state.settings.prices[i])}</p></div>`).join('') + '</div></div>' : ''}
+      ${f.coaches.length ? '<div class="fav-group"><h4>مربیان</h4><div class="coach-grid">' + f.coaches.map((id) => { const c = COACHES.find((x) => x.id === id); return `<div class="coach-card"><div class="coach-avatar">${c.init}</div><h4>${c.name}</h4></div>`; }).join('') + '</div></div>' : ''}
+      ${f.products.length ? '<div class="fav-group"><h4>کالاها</h4><div class="product-grid">' + f.products.map((id) => productCardHtml(PRODUCTS.find((x) => x.id === id))).join('') + '</div></div>' : ''}
+      ${(!f.courts.length && !f.coaches.length && !f.products.length) ? '<div class="fav-empty"><p>لیست علاقه‌مندی‌ها خالی است.</p><button type="button" class="btn btn-accent" data-nav="favorites">رفتن به صفحه علاقه‌مندی‌ها</button></div>' : ''}`;
+    bindProductButtons($('#user-fav-inner'));
+    return;
+  }
+  if (ui.userTab === 'profile') {
+    main.innerHTML = `
+      <h3>اطلاعات پروفایل</h3>
+      <form class="form-grid" id="profile-form">
+        <label>نام و نام خانوادگی<input type="text" class="input" value="${esc(SAMPLE_USER.name)}" /></label>
+        <label>موبایل<input type="tel" class="input" value="${SAMPLE_USER.phone}" disabled /></label>
+        <p class="muted span-2">در این دمو، اطلاعات بازیکن نمونه ثابت است و تغییرات فقط ظاهری ذخیره می‌شوند.</p>
+        <button class="btn btn-accent" type="submit">ذخیره تغییرات</button>
+      </form>`;
+    $('#profile-form').addEventListener('submit', (e) => { e.preventDefault(); toast('تغییرات پروفایل ذخیره شد'); });
+  }
 }
-
-function hoursUntil(b) {
-  const [y, m, d] = b.dateKey.split('-').map(Number);
-  const start = new Date(y, m - 1, d, Math.floor(b.slotHour), b.slotHour % 1 ? 30 : 0);
-  return (start - new Date()) / 36e5;
-}
-
-async function cancelBooking(id, by) {
-  const b = state.bookings.find((x) => x.id === id);
-  if (!b) return;
-  const ok = await confirmBox('لغو رزرو', `لغو تا ۶ ساعت قبل از سانس رایگان است. رزرو ${COURTS[b.courtId].short} برای ${b.name} لغو شود؟`, 'لغو رزرو');
-  if (!ok) return;
-  b.status = 'cancelled';
-  saveState();
-  toast('رزرو لغو شد و سانس در تقویم آزاد شد');
-  if (ui.role === 'user') renderUser(); else renderAdmin();
-  if (ui.role === 'booking') renderBookingView();
-}
+$$('.tab[data-usertab]').forEach((t) =>
+  t.addEventListener('click', () => { ui.userTab = t.dataset.usertab; renderUser(); }));
 
 /* ---------- پنل مدیریت ---------- */
-function weekKeys() {
-  const today = dateKeyOf(new Date());
-  return Array.from({ length: 7 }, (_, i) => addDays(today, i));
-}
-function confirmedBookings() { return state.bookings.filter((b) => b.status === 'confirmed'); }
-
 function renderAdmin() {
-  const wk = weekKeys();
-  const conf = confirmedBookings();
-  const todayKey = wk[0];
-  const todayCount = conf.filter((b) => b.dateKey === todayKey).length;
-  const weekRevenue = conf.filter((b) => wk.includes(b.dateKey)).reduce((s, b) => s + b.amount, 0)
-    + new Set(conf.filter((b) => wk.includes(b.dateKey) && b.racket).map((b) => b.code)).size * RACKET_FEE;
-  const occupancy = Math.round((conf.filter((b) => wk.includes(b.dateKey)).length / (3 * 7 * SLOT_HOURS.length)) * 100);
-  const counts = [0, 0, 0];
-  conf.forEach((b) => counts[b.courtId]++);
-  const popularIdx = counts.indexOf(Math.max(...counts));
-
-  $('#kpi-grid').innerHTML = `
-    <div class="kpi-card"><p class="kpi-label">رزروهای امروز</p><p class="kpi-value">${toFa(todayCount)}</p></div>
-    <div class="kpi-card"><p class="kpi-label">درآمد کل هفته</p><p class="kpi-value">${money(weekRevenue)}</p></div>
-    <div class="kpi-card"><p class="kpi-label">درصد اشغال زمین‌ها</p>
-      <p class="kpi-value">${toFa(occupancy)}٪</p>
-      <div class="occupancy-bar"><i style="width:${occupancy}%"></i></div>
-    </div>
-    <div class="kpi-card"><p class="kpi-label">محبوب‌ترین زمین</p><p class="kpi-value" style="font-size:1rem">${COURTS[popularIdx].short}</p></div>`;
-
-  renderChart(wk);
-  renderFilters();
+  renderKpis();
+  renderAdminChart();
   renderAdminTable();
   renderBlockManager();
   renderPricingForm();
+  renderInbox();
 }
-
-function renderChart(wk) {
-  const W = 660, H = 220, pad = 36, groupW = (W - pad * 2) / 7, barW = 16;
-  const counts = wk.map((k) => SLOT_HOURS.map(() => [0, 0, 0]));
-  confirmedBookings().forEach((b) => {
-    const di = wk.indexOf(b.dateKey);
-    if (di >= 0) counts[di][SLOT_HOURS.indexOf(b.slotHour)][b.courtId]++;
-  });
-  const dayTotals = counts.map((slots) => slots.reduce((a, s) => [a[0] + s[0], a[1] + s[1], a[2] + s[2]], [0, 0, 0]));
+function renderKpis() {
+  const today = dateKeyOf(new Date());
+  const todayBookings = state.bookings.filter((b) => b.dateKey === today && b.status === 'confirmed');
+  const weekRev = state.bookings.filter((b) => b.status === 'confirmed' && weekKeys().includes(b.dateKey))
+    .reduce((s, b) => s + b.amount, 0);
+  const slotsPerCourt = SLOT_HOURS.length * weekKeys().length;
+  const occ = Math.round(state.bookings.filter((b) => b.status === 'confirmed' && weekKeys().includes(b.dateKey)).length / (slotsPerCourt * 3) * 100);
+  const counts = [0, 0, 0];
+  state.bookings.filter((b) => b.status === 'confirmed').forEach((b) => counts[b.courtId]++);
+  const popular = counts.indexOf(Math.max(...counts));
+  $('#kpi-grid').innerHTML = `
+    <div class="kpi"><p class="kpi-label">رزروهای امروز</p><p class="kpi-value green">${toFa(todayBookings.length)}</p></div>
+    <div class="kpi"><p class="kpi-label">درآمد هفته</p><p class="kpi-value gold">${money(weekRev)}</p></div>
+    <div class="kpi"><p class="kpi-label">اشغال زمین‌ها (هفته)</p><p class="kpi-value">${toFa(occ)}٪</p><div class="occ-bar"><div class="occ-fill" style="width:${Math.min(occ, 100)}%"></div></div></div>
+    <div class="kpi"><p class="kpi-label">زمین محبوب</p><p class="kpi-value" style="font-size:1.15rem">${COURTS[popular].short}</p></div>`;
+}
+function renderAdminChart() {
+  const W = 560, H = 240, pad = 34;
+  const wk = weekKeys();
+  const dayTotals = wk.map((k) => COURTS.map((_, ci) =>
+    state.bookings.filter((b) => b.dateKey === k && b.courtId === ci && b.status === 'confirmed').length));
   const max = Math.max(1, ...dayTotals.flat());
-  const colors = ['#10B981', '#0EA5E9', '#F59E0B'];
+  const colors = ['#34D399', '#4FA8E0', '#F4C860'];
+  const barW = 14, groupW = (W - pad * 2) / 7;
   let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" dir="ltr">`;
   for (let g = 0; g <= 4; g++) {
     const y = H - pad - (g / 4) * (H - pad - 20);
-    svg += `<line x1="${pad}" y1="${y}" x2="${W - pad / 2}" y2="${y}" stroke="#E5E7EB" stroke-width="1"/><text x="${W - 6}" y="${y + 4}" font-size="10" fill="#64748B" text-anchor="start">${toFa(Math.round(max * g / 4))}</text>`;
+    svg += `<line x1="${pad}" y1="${y}" x2="${W - pad / 2}" y2="${y}" stroke="#1B3A5A" stroke-width="1"/><text x="${W - pad / 2 + 4}" y="${y + 4}" font-size="10" fill="#9FB6CB">${toFa(Math.round(max * g / 4))}</text>`;
   }
   wk.forEach((k, di) => {
     const gx = W - pad - (di + 1) * groupW;
@@ -525,48 +1041,36 @@ function renderChart(wk) {
       const h = (v / max) * (H - pad - 20);
       svg += `<rect x="${gx + groupW / 2 - barW * 1.6 + ci * barW}" y="${H - pad - h}" width="${barW - 4}" height="${Math.max(h, v ? 3 : 0)}" rx="3" fill="${colors[ci]}"><title>${COURTS[ci].short}: ${toFa(v)}</title></rect>`;
     });
-    svg += `<text x="${gx + groupW / 2}" y="${H - 14}" font-size="10" fill="#64748B" text-anchor="middle">${jalaliLabel(k).short}</text>`;
+    svg += `<text x="${gx + groupW / 2}" y="${H - 12}" font-size="10" fill="#9FB6CB" text-anchor="middle">${jalaliLabel(k).short}</text>`;
   });
   COURTS.forEach((c, ci) => {
-    svg += `<rect x="${pad + ci * 110}" y="6" width="10" height="10" rx="2" fill="${colors[ci]}"/><text x="${pad + ci * 110 + 16}" y="15" font-size="10" fill="#0F172A">${c.short}</text>`;
+    svg += `<rect x="${pad + ci * 110}" y="6" width="10" height="10" rx="2" fill="${colors[ci]}"/><text x="${pad + ci * 110 + 16}" y="15" font-size="10" fill="#EEF4F9">${c.short}</text>`;
   });
   $('#admin-chart').innerHTML = svg + '</svg>';
 }
-
-function renderFilters() {
-  const sel = $('#filter-court');
-  if (!sel.options.length) {
-    sel.innerHTML = '<option value="all">همه زمین‌ها</option>' + COURTS.map((c, i) => `<option value="${i}">${c.name}</option>`).join('');
-  }
-  const search = $('#filter-search').value;
-  $('#filter-search').value = search;
-}
-
 function renderAdminTable() {
-  const fc = $('#filter-court').value, fs = $('#filter-status').value;
-  const q = toEn($('#filter-search').value.trim());
+  const fc = $('#filter-court').value || 'all', fs = $('#filter-status').value;
+  const raw = $('#filter-search').value.trim();
+  const q = toEn(raw);
   const rows = state.bookings
     .filter((b) => (fc === 'all' || b.courtId === +fc) && (fs === 'all' || b.status === fs))
-    .filter((b) => !q || b.name.includes($('#filter-search').value.trim()) || b.phone.includes(q) || b.code.includes(q))
+    .filter((b) => !q || b.name.includes(raw) || b.phone.includes(q) || b.code.includes(q))
     .sort((a, b) => (b.dateKey + b.slotHour).localeCompare(a.dateKey + a.slotHour));
-
   $('#admin-tbody').innerHTML = rows.length ? rows.map((b) => {
     const j = jalaliLabel(b.dateKey);
     return `<tr>
-      <td>${toFa(b.code)}</td>
-      <td>${b.name}<br/><span class="muted">${toFa(b.phone)}</span></td>
+      <td class="num">${toFa(b.code)}</td>
+      <td>${esc(b.name)}<br/><span class="muted num">${toFa(b.phone)}</span></td>
       <td>${COURTS[b.courtId].short}</td>
       <td>${weekdayFa(b.dateKey)} ${j.short}</td>
-      <td>${slotLabel(b.slotHour)}</td>
-      <td>${money(b.amount)}${b.racket ? ' + راکت' : ''}</td>
+      <td class="num">${slotLabel(b.slotHour)}</td>
+      <td class="num">${money(b.amount)}${b.racket ? ' + راکت' : ''}</td>
       <td><span class="status-pill ${b.status === 'confirmed' ? 'ok' : 'cancelled'}">${b.status === 'confirmed' ? 'قطعی' : 'لغو شده'}</span></td>
-      <td>${b.status === 'confirmed' ? `<button type="button" class="btn btn-outline-danger" data-acancel="${b.id}">لغو توسط مدیر</button>` : '—'}</td>
+      <td>${b.status === 'confirmed' ? `<button type="button" class="btn btn-outline-danger btn-sm" data-acancel="${b.id}">لغو توسط مدیر</button>` : '—'}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">رزروی با این فیلترها پیدا نشد.</td></tr>';
-
   $$('[data-acancel]').forEach((b) => b.addEventListener('click', () => cancelBooking(b.dataset.acancel, 'admin')));
 }
-
 ['#filter-court', '#filter-status'].forEach((s) => $(s).addEventListener('change', renderAdminTable));
 $('#filter-search').addEventListener('input', renderAdminTable);
 
@@ -582,14 +1086,11 @@ function fillSelects() {
       return `<option value="${k}">${i === 0 ? 'امروز' : weekdayFa(k)} ${j.short}</option>`;
     }).join('');
   });
-  const fillSlots = () => {
-    [['#block-slot', '#block-date', '#block-court'], ['#manual-slot', '#manual-date', '#manual-court']].forEach(([slotSel, dateSel, courtSel]) => {
-      $(slotSel).innerHTML = SLOT_HOURS.map((h) => `<option value="${h}">${slotLabel(h)}</option>`).join('');
-    });
-  };
-  fillSlots();
+  [['#block-slot'], ['#manual-slot']].forEach(([slotSel]) => {
+    $(slotSel).innerHTML = SLOT_HOURS.map((h) => `<option value="${h}">${slotLabel(h)}</option>`).join('');
+  });
+  $('#filter-court').innerHTML = '<option value="all">همه زمین‌ها</option>' + COURTS.map((c, i) => `<option value="${i}">${c.name}</option>`).join('');
 }
-
 $('#open-manual-book').addEventListener('click', () => {
   $('#manual-form').reset();
   fillSelects();
@@ -629,17 +1130,16 @@ $('#block-form').addEventListener('submit', (e) => {
   saveState();
   $('#block-reason').value = '';
   renderAdmin();
-  if (ui.role === 'booking') renderBookingView();
+  renderBookingView();
   toast('سانس مسدود شد');
 });
-
 function renderBlockManager() {
   const list = $('#block-list');
   list.innerHTML = state.blocks.length ? state.blocks.map((b) => {
     const j = jalaliLabel(b.dateKey);
-    return `<li><span>${COURTS[b.courtId].short} — ${weekdayFa(b.dateKey)} ${j.short} — ${slotLabel(b.slotHour)} — ${b.reason}</span>
+    return `<li><span>${COURTS[b.courtId].short} — ${weekdayFa(b.dateKey)} ${j.short} — <span class="num">${slotLabel(b.slotHour)}</span> — ${esc(b.reason)}</span>
       <button type="button" class="btn btn-ghost btn-sm" data-unblock="${b.id}">رفع مسدودی</button></li>`;
-  }).join('') : '<li class="muted">سانس مسدودی وجود ندارد.</li>';
+  }).join('') : '<li>سانس مسدودی وجود ندارد.</li>';
   $$('[data-unblock]').forEach((b) => b.addEventListener('click', () => {
     state.blocks = state.blocks.filter((x) => x.id !== b.dataset.unblock);
     saveState(); renderAdmin(); renderBookingView();
@@ -647,7 +1147,7 @@ function renderBlockManager() {
   }));
 }
 
-/* تنظیمات تعرفه */
+/* تعرفه‌ها */
 function renderPricingForm() {
   state.settings.prices.forEach((p, i) => $('#price-' + i).value = p);
   $('#offpeak').value = state.settings.offPeakDiscount;
@@ -661,22 +1161,94 @@ $('#pricing-form').addEventListener('submit', (e) => {
   toast('تعرفه‌ها ذخیره شد و در کل سایت به‌روز شد');
 });
 
+/* صندوق پیام‌ها */
+function renderInbox() {
+  const box = $('#inbox-list');
+  if (!state.messages.length) { box.innerHTML = '<p class="muted">پیامی دریافت نشده است.</p>'; return; }
+  box.innerHTML = state.messages.slice().reverse().map((m) => {
+    const d = new Date(m.createdAt);
+    return `<div class="inbox-item">
+      <strong>${esc(m.subject)}</strong> — ${esc(m.name)} <span class="muted num">(${toFa(m.phone)})</span>
+      <p class="muted" style="margin:4px 0 0">${esc(m.body)}</p>
+      <p class="muted" style="margin:4px 0 0;font-size:.78rem">${toFa(d.toLocaleDateString('fa-IR'))}</p>
+    </div>`;
+  }).join('');
+}
+
 /* ---------- بستن مودال‌ها ---------- */
 $$('.modal-overlay').forEach((ov) => {
   ov.addEventListener('click', (e) => { if (e.target === ov) ov.classList.add('hidden'); });
   $$('[data-close]', ov).forEach((b) => b.addEventListener('click', () => ov.classList.add('hidden')));
 });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') $$('.modal-overlay:not(.hidden)').forEach((m) => m.classList.add('hidden'));
+});
 
-/* ---------- تب‌های پنل مشتری ---------- */
-$$('.tab[data-usertab]').forEach((t) =>
-  t.addEventListener('click', () => { ui.userTab = t.dataset.usertab; renderUser(); }));
+/* ---------- بازنشانی دمو ---------- */
+$('#view-home'); // noop guard
+async function resetDemo() {
+  const ok = await confirmBox('بازنشانی داده‌های دمو', 'تمام رزروها، سفارش‌ها، پلن فعال و تنظیمات به حالت اولیه برمی‌گردند. مطمئن هستید؟', 'بازنشانی');
+  if (!ok) return;
+  resetState();
+  renderSessionBar();
+  renderFavBadge();
+  renderAll();
+  toast('داده‌های دمو بازنشانی شد');
+}
+
+/* ---------- فوتر ---------- */
+function buildFooter() {
+  const foot = document.createElement('footer');
+  foot.className = 'site-footer';
+  foot.innerHTML = `
+    <div class="footer-inner">
+      <div>
+        <h4>${CLUB.name}</h4>
+        <p class="muted">سه زمین استاندارد FIP در قائم‌شهر با رزرو آنلاین ۹۰ دقیقه‌ای، بلیت دیجیتال و پنل مدیریت باشگاه. این یک دموی نمایشی است؛ داده‌ها فقط در مرورگر شما ذخیره می‌شوند.</p>
+        <p class="footer-legal">© ${toFa(new Date().getFullYear())} ${CLUB.name} — دموی آموزشی</p>
+      </div>
+      <div>
+        <h4>دسترسی سریع</h4>
+        <ul class="footer-links">
+          <li><button type="button" data-nav="about">درباره ما</button></li>
+          <li><button type="button" data-nav="blog">وبلاگ</button></li>
+          <li><button type="button" data-nav="favorites">علاقه‌مندی‌ها</button></li>
+          <li><button type="button" data-nav="account">حساب کاربری</button></li>
+          <li><button type="button" data-nav="plans">پلن‌های عضویت</button></li>
+          <li><button type="button" data-nav="map">نقشه</button></li>
+          <li><button type="button" data-nav="contact">تماس با ما</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4>تماس با ما</h4>
+        <ul class="plain-list">
+          <li><span>${CLUB.addr}</span></li>
+          <li><span>پذیرش: ${CLUB.phone}</span></li>
+          <li><span>ساعت کاری: ${CLUB.hours}</span></li>
+          <li><button type="button" class="btn btn-ghost btn-sm" id="reset-demo-btn">بازنشانی داده‌های دمو</button></li>
+        </ul>
+      </div>
+    </div>`;
+  document.body.appendChild(foot);
+  $('#reset-demo-btn').addEventListener('click', resetDemo);
+}
 
 /* ---------- شروع ---------- */
 function renderAll() {
+  fillProvinceSelects();
+  renderCityPills();
   renderBookingView();
-  renderUser();
-  switchRole(ui.role);
+  renderCoaches();
+  renderEvents();
+  renderShopTeaser();
+  renderBlogTeaser();
+  renderFavBadge();
+  renderSessionBar();
+  renderContactInfo();
+  renderMap();
+  showView('home');
 }
 loadState();
 fillSelects();
+buildFooter();
 renderAll();
